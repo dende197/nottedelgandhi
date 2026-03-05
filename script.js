@@ -50,7 +50,7 @@ const OBJECTS = [
         icon: '📄',
         name: 'Le Formule Segrete',
         mask: 'Imported_Image-5.png',
-        bbox: [227, 499, 297, 628],
+        bbox: [210, 185, 265, 260],
         story: 'Un foglio ingiallito coperto di formule chimiche e diagrammi alchemici. L\'inchiostro è ancora fresco — qualcuno era qui poco fa. Si riconoscono simboli alchemici per zolfo, mercurio e sale: i tre principi di Paracelso.',
         clue: 'Zolfo (🜍), Mercurio (☿), Sale (🜔) — i tre principi di Paracelso. La materia si TRASFORMA.'
     },
@@ -114,7 +114,6 @@ const celebrationClose = document.getElementById('celebration-close');
 const particleCanvas = document.getElementById('particle-canvas');
 
 // ─── OBJECT LAYER REFERENCES ──────────────────────────
-// Each object gets: { glowFar, glowNear, overlay, hotspot }
 const objectLayers = {};
 
 // ─── INIT ──────────────────────────────────────────────
@@ -146,33 +145,29 @@ function saveState() {
     } catch (e) { /* silent fail */ }
 }
 
-// ─── BUILD SCENE (create mask layers + hotspots) ──────
+// ─── BUILD SCENE ──────────────────────────────────────
 function buildScene() {
     OBJECTS.forEach(obj => {
         const maskUrl = obj.mask;
 
-        // --- Far glow (heavy blur, wide aura) ---
         const glowFar = document.createElement('div');
         glowFar.className = 'hotspot-glow-far';
         glowFar.style.webkitMaskImage = `url(${maskUrl})`;
         glowFar.style.maskImage = `url(${maskUrl})`;
         maskLayer.appendChild(glowFar);
 
-        // --- Near glow (medium blur, edge definition) ---
         const glowNear = document.createElement('div');
         glowNear.className = 'hotspot-glow-near';
         glowNear.style.webkitMaskImage = `url(${maskUrl})`;
         glowNear.style.maskImage = `url(${maskUrl})`;
         maskLayer.appendChild(glowNear);
 
-        // --- Overlay (sharp, very subtle inner highlight) ---
         const overlay = document.createElement('div');
         overlay.className = 'hotspot-overlay';
         overlay.style.webkitMaskImage = `url(${maskUrl})`;
         overlay.style.maskImage = `url(${maskUrl})`;
         maskLayer.appendChild(overlay);
 
-        // --- Hotspot click area (invisible, positioned by bbox) ---
         const [x1, y1, x2, y2] = obj.bbox;
         const hotspot = document.createElement('div');
         hotspot.className = 'hotspot';
@@ -183,10 +178,8 @@ function buildScene() {
         hotspot.style.height = ((y2 - y1) / SCENE_H * 100).toFixed(2) + '%';
         scene.appendChild(hotspot);
 
-        // Store references
         objectLayers[obj.id] = { glowFar, glowNear, overlay, hotspot };
 
-        // --- Hover events ---
         hotspot.addEventListener('mouseenter', () => {
             if (!overlay.classList.contains('active') && !overlay.classList.contains('discovered')) {
                 glowFar.classList.add('hover');
@@ -203,13 +196,11 @@ function buildScene() {
             }
         });
 
-        // --- Click event ---
         hotspot.addEventListener('click', (e) => {
             e.stopPropagation();
             onObjectClick(obj.id, e);
         });
 
-        // Apply discovered state if already found
         if (discoveredObjects.has(obj.id)) {
             glowFar.classList.add('discovered');
             glowNear.classList.add('discovered');
@@ -236,16 +227,11 @@ function buildProgressBar() {
 
 // ─── EVENT LISTENERS ──────────────────────────────────
 function attachEventListeners() {
-    // Start button
     startBtn.addEventListener('click', startGame);
-
-    // Modal close
     modalClose.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) closeModal();
     });
-
-    // Keyboard
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeModal();
@@ -253,24 +239,14 @@ function attachEventListeners() {
             removeHintTooltip();
         }
     });
-
-    // Hint button
     hintBtn.addEventListener('click', showHint);
-
-    // Reset button
     resetBtn.addEventListener('click', resetGame);
-
-    // Journal buttons
     journalBtn.addEventListener('click', toggleJournal);
     journalClose.addEventListener('click', closeJournal);
     journalPanel.addEventListener('click', (e) => {
         if (e.target === journalPanel) closeJournal();
     });
-
-    // Celebration close
     celebrationClose.addEventListener('click', closeCelebration);
-
-    // Click on scene background to clear active states
     scene.addEventListener('click', (e) => {
         if (e.target === scene || e.target.classList.contains('scene-bg') || e.target.id === 'vignette-overlay') {
             clearActiveStates();
@@ -282,7 +258,6 @@ function attachEventListeners() {
 function startGame() {
     gameStarted = true;
     introScreen.classList.add('fade-out');
-
     setTimeout(() => {
         introScreen.classList.add('hidden');
     }, 1000);
@@ -292,16 +267,11 @@ function startGame() {
 function onObjectClick(objId, event) {
     const obj = OBJECTS.find(o => o.id === objId);
     if (!obj) return;
-
     const layers = objectLayers[objId];
     if (!layers) return;
 
-    // Spawn particles
-    if (event) {
-        spawnClickParticles(event.clientX, event.clientY);
-    }
+    if (event) spawnClickParticles(event.clientX, event.clientY);
 
-    // Hide global hint text
     const clickHint = document.getElementById('click-hint');
     if (clickHint) {
         clickHint.style.transition = 'opacity 0.5s ease';
@@ -309,10 +279,8 @@ function onObjectClick(objId, event) {
         setTimeout(() => clickHint.remove(), 500);
     }
 
-    // Clear previous active states
     clearActiveStates();
 
-    // Set active glow
     layers.glowFar.classList.remove('hover');
     layers.glowNear.classList.remove('hover');
     layers.overlay.classList.remove('hover');
@@ -320,31 +288,22 @@ function onObjectClick(objId, event) {
     layers.glowNear.classList.add('active');
     layers.overlay.classList.add('active');
 
-    // Play click sound
     playClickSound();
 
-    // Mark as discovered
     const isNew = !discoveredObjects.has(objId);
     discoveredObjects.add(objId);
     saveState();
 
-    // Open modal
     openModal(obj, isNew);
-
-    // Update progress
     updateProgress();
 
-    // Update journal
     if (isNew) {
         journalBtn.classList.add('has-new');
         updateJournal();
     }
 
-    // Check win condition
     if (discoveredObjects.size === OBJECTS.length) {
-        setTimeout(() => {
-            showCelebration();
-        }, 1500);
+        setTimeout(() => showCelebration(), 1500);
     }
 }
 
@@ -353,8 +312,6 @@ function clearActiveStates() {
     document.querySelectorAll('.hotspot-glow-far, .hotspot-glow-near, .hotspot-overlay').forEach(el => {
         el.classList.remove('active', 'hover');
     });
-
-    // Re-apply discovered states
     OBJECTS.forEach(obj => {
         if (discoveredObjects.has(obj.id)) {
             const layers = objectLayers[obj.id];
@@ -367,14 +324,13 @@ function clearActiveStates() {
     });
 }
 
-// ─── TYPEWRITER EFFECT ────────────────────────────────
+// ─── TYPEWRITER ───────────────────────────────────────
 let typewriterInterval = null;
 
 function typeWriter(text, element, speed = 25) {
     stopTypewriter();
     element.textContent = '';
     let i = 0;
-
     function type() {
         if (i < text.length) {
             element.textContent += text.charAt(i);
@@ -396,10 +352,7 @@ function stopTypewriter() {
 function openModal(obj, isNew) {
     modalIcon.textContent = obj.icon;
     modalTitle.textContent = obj.name;
-
-    // Use typewriter for the story
     typeWriter(obj.story, modalStory);
-
     modalClueText.textContent = obj.clue;
 
     const badge = document.getElementById('modal-badge');
@@ -419,8 +372,6 @@ function openModal(obj, isNew) {
 function closeModal() {
     stopTypewriter();
     modalOverlay.classList.add('hidden');
-    const badge = document.getElementById('modal-badge');
-    badge.style.color = '';
     clearActiveStates();
 }
 
@@ -429,7 +380,6 @@ function updateProgress() {
     const count = discoveredObjects.size;
     const total = OBJECTS.length;
     progressText.textContent = `${count} / ${total} segreti scoperti`;
-
     OBJECTS.forEach(obj => {
         const progItem = document.getElementById(`prog-${obj.id}`);
         if (progItem && discoveredObjects.has(obj.id)) {
@@ -459,7 +409,6 @@ function closeJournal() {
 
 function updateJournal() {
     journalEntries.innerHTML = '';
-
     OBJECTS.forEach(obj => {
         const entry = document.createElement('div');
         const isFound = discoveredObjects.has(obj.id);
@@ -492,30 +441,23 @@ function updateJournal() {
 // ─── HINT SYSTEM ──────────────────────────────────────
 function showHint() {
     removeHintTooltip();
-
     const undiscovered = OBJECTS.filter(o => !discoveredObjects.has(o.id));
     if (undiscovered.length === 0) {
         showTooltip('🎉 Hai già scoperto tutti gli oggetti!');
         return;
     }
-
-    // Pick a random undiscovered object and highlight
     const target = undiscovered[Math.floor(Math.random() * undiscovered.length)];
     const layers = objectLayers[target.id];
-
     if (layers) {
-        // Briefly show the glow for the hinted object
         layers.glowFar.classList.add('hover');
         layers.glowNear.classList.add('hover');
         layers.hotspot.classList.add('hint-highlight');
-
         setTimeout(() => {
             layers.glowFar.classList.remove('hover');
             layers.glowNear.classList.remove('hover');
             layers.hotspot.classList.remove('hint-highlight');
         }, 3000);
     }
-
     showTooltip(`💡 Cerca ${target.icon} ${target.name}...`);
 }
 
@@ -526,7 +468,6 @@ function showTooltip(text) {
     tooltip.id = 'active-tooltip';
     tooltip.textContent = text;
     document.body.appendChild(tooltip);
-
     setTimeout(() => {
         tooltip.classList.add('fade-out');
         setTimeout(() => tooltip.remove(), 300);
@@ -541,17 +482,12 @@ function removeHintTooltip() {
 // ─── RESET GAME ───────────────────────────────────────
 function resetGame() {
     if (!confirm('Vuoi ricominciare? Tutti i progressi saranno persi.')) return;
-
     discoveredObjects.clear();
     localStorage.removeItem('lab_discovered');
-
-    // Clear all glow states
     document.querySelectorAll('.hotspot-glow-far, .hotspot-glow-near, .hotspot-overlay').forEach(el => {
         el.classList.remove('active', 'hover', 'discovered');
-        // Reset background color (for discovered green state)
         el.style.background = '';
     });
-
     buildProgressBar();
     updateProgress();
     updateJournal();
@@ -596,12 +532,10 @@ function launchConfetti() {
     let frame = 0;
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         confetti.forEach(c => {
             c.y += c.speed;
             c.x += c.drift;
             c.angle += c.spin;
-
             ctx.save();
             ctx.translate(c.x, c.y);
             ctx.rotate(c.angle);
@@ -610,13 +544,11 @@ function launchConfetti() {
             ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
             ctx.restore();
         });
-
         frame++;
         if (frame < 300 && !celebrationOverlay.classList.contains('hidden')) {
             requestAnimationFrame(animate);
         }
     }
-
     animate();
 }
 
@@ -625,21 +557,18 @@ function spawnClickParticles(x, y) {
     for (let i = 0; i < 10; i++) {
         const particle = document.createElement('div');
         particle.className = 'click-particle';
-
         const dx = (Math.random() - 0.5) * 80;
         particle.style.setProperty('--dx', `${dx}px`);
-
         const dy = (Math.random() - 0.5) * 20;
         particle.style.left = `${x}px`;
         particle.style.top = `${y + dy}px`;
         particle.style.animationDelay = `${Math.random() * 0.2}s`;
-
         document.body.appendChild(particle);
         setTimeout(() => particle.remove(), 1100);
     }
 }
 
-// ─── AMBIENT PARTICLE SYSTEM ──────────────────────────
+// ─── AMBIENT PARTICLES ────────────────────────────────
 function initParticles() {
     const ctx = particleCanvas.getContext('2d');
     let particles = [];
@@ -648,11 +577,9 @@ function initParticles() {
         particleCanvas.width = window.innerWidth;
         particleCanvas.height = window.innerHeight;
     }
-
     resize();
     window.addEventListener('resize', resize);
 
-    // Create ambient particles
     for (let i = 0; i < 40; i++) {
         particles.push({
             x: Math.random() * particleCanvas.width,
@@ -668,33 +595,24 @@ function initParticles() {
 
     function animateParticles() {
         ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-
         particles.forEach(p => {
             p.y += p.speedY;
             p.x += p.speedX;
-
             const flicker = Math.sin(Date.now() * p.flickerSpeed + p.flickerOffset) * 0.3 + 0.7;
-
             if (p.y < -10) p.y = particleCanvas.height + 10;
             if (p.x < -10) p.x = particleCanvas.width + 10;
             if (p.x > particleCanvas.width + 10) p.x = -10;
-
-            // Core dot
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(212, 168, 68, ${p.opacity * flicker})`;
             ctx.fill();
-
-            // Soft glow halo
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(212, 168, 68, ${p.opacity * flicker * 0.12})`;
             ctx.fill();
         });
-
         requestAnimationFrame(animateParticles);
     }
-
     animateParticles();
 }
 
@@ -703,7 +621,6 @@ function playClickSound() {
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // Magical chime
         const osc1 = audioCtx.createOscillator();
         const gain1 = audioCtx.createGain();
         osc1.connect(gain1);
@@ -717,7 +634,6 @@ function playClickSound() {
         osc1.start(audioCtx.currentTime);
         osc1.stop(audioCtx.currentTime + 0.5);
 
-        // Second harmonic
         const osc2 = audioCtx.createOscillator();
         const gain2 = audioCtx.createGain();
         osc2.connect(gain2);
@@ -731,7 +647,7 @@ function playClickSound() {
         osc2.start(audioCtx.currentTime + 0.05);
         osc2.stop(audioCtx.currentTime + 0.5);
     } catch (e) {
-        // Audio not supported — fail silently
+        // Audio not supported
     }
 }
 

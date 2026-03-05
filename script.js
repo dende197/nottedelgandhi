@@ -3,9 +3,11 @@
    Edge-Glow Mask System + Journal Feature
    ═══════════════════════════════════════════════════════ */
 
+// ─── SCENE DIMENSIONS (mask reference) ─────────────────
 const SCENE_W = 1280;
 const SCENE_H = 714;
 
+// ─── GAME DATA ─────────────────────────────────────────
 const OBJECTS = [
     {
         id: 'calderone',
@@ -85,8 +87,9 @@ const FINAL_MESSAGE = `
 
 // ─── STATE ─────────────────────────────────────────────
 let discoveredObjects = new Set();
+let gameStarted = false;
 
-// ─── DOM ───────────────────────────────────────────────
+// ─── DOM ELEMENTS ──────────────────────────────────────
 const introScreen = document.getElementById('intro-screen');
 const startBtn = document.getElementById('start-btn');
 const scene = document.getElementById('scene');
@@ -110,6 +113,8 @@ const finalMessage = document.getElementById('final-message');
 const celebrationClose = document.getElementById('celebration-close');
 const particleCanvas = document.getElementById('particle-canvas');
 
+// ─── OBJECT LAYER REFERENCES ──────────────────────────
+// Each object gets: { glowFar, glowNear, overlay, hotspot }
 const objectLayers = {};
 
 // ─── INIT ──────────────────────────────────────────────
@@ -123,58 +128,65 @@ function init() {
     updateJournal();
 }
 
-// ─── STATE ─────────────────────────────────────────────
+// ─── LOAD / SAVE STATE ─────────────────────────────────
 function loadState() {
     try {
         const saved = localStorage.getItem('lab_discovered');
-        if (saved) discoveredObjects = new Set(JSON.parse(saved));
-    } catch (e) { discoveredObjects = new Set(); }
+        if (saved) {
+            discoveredObjects = new Set(JSON.parse(saved));
+        }
+    } catch (e) {
+        discoveredObjects = new Set();
+    }
 }
 
 function saveState() {
-    try { localStorage.setItem('lab_discovered', JSON.stringify([...discoveredObjects])); }
-    catch (e) { }
+    try {
+        localStorage.setItem('lab_discovered', JSON.stringify([...discoveredObjects]));
+    } catch (e) { /* silent fail */ }
 }
 
-// ─── BUILD SCENE ───────────────────────────────────────
+// ─── BUILD SCENE (create mask layers + hotspots) ──────
 function buildScene() {
     OBJECTS.forEach(obj => {
         const maskUrl = obj.mask;
 
-        // Far glow
+        // --- Far glow (heavy blur, wide aura) ---
         const glowFar = document.createElement('div');
         glowFar.className = 'hotspot-glow-far';
         glowFar.style.webkitMaskImage = `url(${maskUrl})`;
         glowFar.style.maskImage = `url(${maskUrl})`;
         maskLayer.appendChild(glowFar);
 
-        // Near glow
+        // --- Near glow (medium blur, edge definition) ---
         const glowNear = document.createElement('div');
         glowNear.className = 'hotspot-glow-near';
         glowNear.style.webkitMaskImage = `url(${maskUrl})`;
         glowNear.style.maskImage = `url(${maskUrl})`;
         maskLayer.appendChild(glowNear);
 
-        // Overlay
+        // --- Overlay (sharp, very subtle inner highlight) ---
         const overlay = document.createElement('div');
         overlay.className = 'hotspot-overlay';
         overlay.style.webkitMaskImage = `url(${maskUrl})`;
         overlay.style.maskImage = `url(${maskUrl})`;
         maskLayer.appendChild(overlay);
 
-        // Hotspot click area
+        // --- Hotspot click area (invisible, positioned by bbox) ---
         const [x1, y1, x2, y2] = obj.bbox;
         const hotspot = document.createElement('div');
         hotspot.className = 'hotspot';
         hotspot.dataset.id = obj.id;
-        hotspot.style.left = (x1 / SCENE_W * 100).toFixed(3) + '%';
-        hotspot.style.top = (y1 / SCENE_H * 100).toFixed(3) + '%';
-        hotspot.style.width = ((x2 - x1) / SCENE_W * 100).toFixed(3) + '%';
-        hotspot.style.height = ((y2 - y1) / SCENE_H * 100).toFixed(3) + '%';
+        hotspot.style.left = (x1 / SCENE_W * 100).toFixed(2) + '%';
+        hotspot.style.top = (y1 / SCENE_H * 100).toFixed(2) + '%';
+        hotspot.style.width = ((x2 - x1) / SCENE_W * 100).toFixed(2) + '%';
+        hotspot.style.height = ((y2 - y1) / SCENE_H * 100).toFixed(2) + '%';
         scene.appendChild(hotspot);
 
+        // Store references
         objectLayers[obj.id] = { glowFar, glowNear, overlay, hotspot };
 
+        // --- Hover events ---
         hotspot.addEventListener('mouseenter', () => {
             if (!overlay.classList.contains('active') && !overlay.classList.contains('discovered')) {
                 glowFar.classList.add('hover');
@@ -191,11 +203,13 @@ function buildScene() {
             }
         });
 
+        // --- Click event ---
         hotspot.addEventListener('click', (e) => {
             e.stopPropagation();
             onObjectClick(obj.id, e);
         });
 
+        // Apply discovered state if already found
         if (discoveredObjects.has(obj.id)) {
             glowFar.classList.add('discovered');
             glowNear.classList.add('discovered');
@@ -204,7 +218,7 @@ function buildScene() {
     });
 }
 
-// ─── PROGRESS BAR ──────────────────────────────────────
+// ─── BUILD PROGRESS BAR ───────────────────────────────
 function buildProgressBar() {
     progressItems.innerHTML = '';
     OBJECTS.forEach(obj => {
@@ -213,50 +227,81 @@ function buildProgressBar() {
         item.id = `prog-${obj.id}`;
         item.textContent = obj.icon;
         item.title = obj.name;
-        if (discoveredObjects.has(obj.id)) item.classList.add('found');
+        if (discoveredObjects.has(obj.id)) {
+            item.classList.add('found');
+        }
         progressItems.appendChild(item);
     });
 }
 
-// ─── EVENTS ────────────────────────────────────────────
+// ─── EVENT LISTENERS ──────────────────────────────────
 function attachEventListeners() {
+    // Start button
     startBtn.addEventListener('click', startGame);
+
+    // Modal close
     modalClose.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') { closeModal(); closeJournal(); removeHintTooltip(); }
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
     });
+
+    // Keyboard
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            closeJournal();
+            removeHintTooltip();
+        }
+    });
+
+    // Hint button
     hintBtn.addEventListener('click', showHint);
+
+    // Reset button
     resetBtn.addEventListener('click', resetGame);
+
+    // Journal buttons
     journalBtn.addEventListener('click', toggleJournal);
     journalClose.addEventListener('click', closeJournal);
-    journalPanel.addEventListener('click', (e) => { if (e.target === journalPanel) closeJournal(); });
+    journalPanel.addEventListener('click', (e) => {
+        if (e.target === journalPanel) closeJournal();
+    });
+
+    // Celebration close
     celebrationClose.addEventListener('click', closeCelebration);
 
-    // Click su sfondo scena per deselezionare
+    // Click on scene background to clear active states
     scene.addEventListener('click', (e) => {
-        const el = e.target;
-        if (el === scene || el.classList.contains('scene-bg') || el.id === 'vignette-overlay' || el.id === 'maskLayer') {
+        if (e.target === scene || e.target.classList.contains('scene-bg') || e.target.id === 'vignette-overlay') {
             clearActiveStates();
         }
     });
 }
 
-// ─── GAME FLOW ─────────────────────────────────────────
+// ─── START GAME ───────────────────────────────────────
 function startGame() {
+    gameStarted = true;
     introScreen.classList.add('fade-out');
-    setTimeout(() => introScreen.classList.add('hidden'), 1000);
+
+    setTimeout(() => {
+        introScreen.classList.add('hidden');
+    }, 1000);
 }
 
+// ─── OBJECT CLICK ─────────────────────────────────────
 function onObjectClick(objId, event) {
     const obj = OBJECTS.find(o => o.id === objId);
     if (!obj) return;
+
     const layers = objectLayers[objId];
     if (!layers) return;
 
-    if (event) spawnClickParticles(event.clientX, event.clientY);
+    // Spawn particles
+    if (event) {
+        spawnClickParticles(event.clientX, event.clientY);
+    }
 
-    // Rimuovi hint text
+    // Hide global hint text
     const clickHint = document.getElementById('click-hint');
     if (clickHint) {
         clickHint.style.transition = 'opacity 0.5s ease';
@@ -264,8 +309,10 @@ function onObjectClick(objId, event) {
         setTimeout(() => clickHint.remove(), 500);
     }
 
+    // Clear previous active states
     clearActiveStates();
 
+    // Set active glow
     layers.glowFar.classList.remove('hover');
     layers.glowNear.classList.remove('hover');
     layers.overlay.classList.remove('hover');
@@ -273,30 +320,41 @@ function onObjectClick(objId, event) {
     layers.glowNear.classList.add('active');
     layers.overlay.classList.add('active');
 
+    // Play click sound
     playClickSound();
 
+    // Mark as discovered
     const isNew = !discoveredObjects.has(objId);
     discoveredObjects.add(objId);
     saveState();
 
+    // Open modal
     openModal(obj, isNew);
+
+    // Update progress
     updateProgress();
 
+    // Update journal
     if (isNew) {
         journalBtn.classList.add('has-new');
         updateJournal();
     }
 
+    // Check win condition
     if (discoveredObjects.size === OBJECTS.length) {
-        setTimeout(() => showCelebration(), 1500);
+        setTimeout(() => {
+            showCelebration();
+        }, 1500);
     }
 }
 
+// ─── CLEAR ACTIVE / HOVER STATES ──────────────────────
 function clearActiveStates() {
     document.querySelectorAll('.hotspot-glow-far, .hotspot-glow-near, .hotspot-overlay').forEach(el => {
         el.classList.remove('active', 'hover');
     });
-    // Riapplica discovered
+
+    // Re-apply discovered states
     OBJECTS.forEach(obj => {
         if (discoveredObjects.has(obj.id)) {
             const layers = objectLayers[obj.id];
@@ -309,16 +367,18 @@ function clearActiveStates() {
     });
 }
 
-// ─── TYPEWRITER ────────────────────────────────────────
+// ─── TYPEWRITER EFFECT ────────────────────────────────
 let typewriterInterval = null;
 
 function typeWriter(text, element, speed = 25) {
     stopTypewriter();
     element.textContent = '';
     let i = 0;
+
     function type() {
         if (i < text.length) {
-            element.textContent += text.charAt(i++);
+            element.textContent += text.charAt(i);
+            i++;
             typewriterInterval = setTimeout(type, speed);
         }
     }
@@ -326,14 +386,20 @@ function typeWriter(text, element, speed = 25) {
 }
 
 function stopTypewriter() {
-    if (typewriterInterval) { clearTimeout(typewriterInterval); typewriterInterval = null; }
+    if (typewriterInterval) {
+        clearTimeout(typewriterInterval);
+        typewriterInterval = null;
+    }
 }
 
-// ─── MODAL ─────────────────────────────────────────────
+// ─── MODAL ────────────────────────────────────────────
 function openModal(obj, isNew) {
     modalIcon.textContent = obj.icon;
     modalTitle.textContent = obj.name;
+
+    // Use typewriter for the story
     typeWriter(obj.story, modalStory);
+
     modalClueText.textContent = obj.clue;
 
     const badge = document.getElementById('modal-badge');
@@ -346,27 +412,39 @@ function openModal(obj, isNew) {
         badge.innerHTML = '<span>📌 Già Scoperto</span>';
         badge.style.color = 'var(--text-secondary)';
     }
+
     modalOverlay.classList.remove('hidden');
 }
 
 function closeModal() {
     stopTypewriter();
     modalOverlay.classList.add('hidden');
+    const badge = document.getElementById('modal-badge');
+    badge.style.color = '';
     clearActiveStates();
 }
 
-// ─── PROGRESS ──────────────────────────────────────────
+// ─── UPDATE PROGRESS ──────────────────────────────────
 function updateProgress() {
-    progressText.textContent = `${discoveredObjects.size} / ${OBJECTS.length} segreti scoperti`;
+    const count = discoveredObjects.size;
+    const total = OBJECTS.length;
+    progressText.textContent = `${count} / ${total} segreti scoperti`;
+
     OBJECTS.forEach(obj => {
-        const item = document.getElementById(`prog-${obj.id}`);
-        if (item && discoveredObjects.has(obj.id)) item.classList.add('found');
+        const progItem = document.getElementById(`prog-${obj.id}`);
+        if (progItem && discoveredObjects.has(obj.id)) {
+            progItem.classList.add('found');
+        }
     });
 }
 
-// ─── JOURNAL ───────────────────────────────────────────
+// ─── JOURNAL ──────────────────────────────────────────
 function toggleJournal() {
-    journalPanel.classList.contains('hidden') ? openJournal() : closeJournal();
+    if (journalPanel.classList.contains('hidden')) {
+        openJournal();
+    } else {
+        closeJournal();
+    }
 }
 
 function openJournal() {
@@ -375,13 +453,16 @@ function openJournal() {
     journalPanel.classList.remove('hidden');
 }
 
-function closeJournal() { journalPanel.classList.add('hidden'); }
+function closeJournal() {
+    journalPanel.classList.add('hidden');
+}
 
 function updateJournal() {
     journalEntries.innerHTML = '';
+
     OBJECTS.forEach(obj => {
-        const isFound = discoveredObjects.has(obj.id);
         const entry = document.createElement('div');
+        const isFound = discoveredObjects.has(obj.id);
         entry.className = `journal-entry ${isFound ? 'unlocked' : 'locked'}`;
 
         const header = document.createElement('div');
@@ -408,24 +489,33 @@ function updateJournal() {
     });
 }
 
-// ─── HINT ──────────────────────────────────────────────
+// ─── HINT SYSTEM ──────────────────────────────────────
 function showHint() {
     removeHintTooltip();
-    const undiscovered = OBJECTS.filter(o => !discoveredObjects.has(o.id));
-    if (undiscovered.length === 0) { showTooltip('🎉 Hai già scoperto tutti gli oggetti!'); return; }
 
+    const undiscovered = OBJECTS.filter(o => !discoveredObjects.has(o.id));
+    if (undiscovered.length === 0) {
+        showTooltip('🎉 Hai già scoperto tutti gli oggetti!');
+        return;
+    }
+
+    // Pick a random undiscovered object and highlight
     const target = undiscovered[Math.floor(Math.random() * undiscovered.length)];
     const layers = objectLayers[target.id];
+
     if (layers) {
+        // Briefly show the glow for the hinted object
         layers.glowFar.classList.add('hover');
         layers.glowNear.classList.add('hover');
         layers.hotspot.classList.add('hint-highlight');
+
         setTimeout(() => {
             layers.glowFar.classList.remove('hover');
             layers.glowNear.classList.remove('hover');
             layers.hotspot.classList.remove('hint-highlight');
         }, 3000);
     }
+
     showTooltip(`💡 Cerca ${target.icon} ${target.name}...`);
 }
 
@@ -436,6 +526,7 @@ function showTooltip(text) {
     tooltip.id = 'active-tooltip';
     tooltip.textContent = text;
     document.body.appendChild(tooltip);
+
     setTimeout(() => {
         tooltip.classList.add('fade-out');
         setTimeout(() => tooltip.remove(), 300);
@@ -447,21 +538,26 @@ function removeHintTooltip() {
     if (existing) existing.remove();
 }
 
-// ─── RESET ─────────────────────────────────────────────
+// ─── RESET GAME ───────────────────────────────────────
 function resetGame() {
     if (!confirm('Vuoi ricominciare? Tutti i progressi saranno persi.')) return;
+
     discoveredObjects.clear();
     localStorage.removeItem('lab_discovered');
+
+    // Clear all glow states
     document.querySelectorAll('.hotspot-glow-far, .hotspot-glow-near, .hotspot-overlay').forEach(el => {
         el.classList.remove('active', 'hover', 'discovered');
+        // Reset background color (for discovered green state)
         el.style.background = '';
     });
+
     buildProgressBar();
     updateProgress();
     updateJournal();
 }
 
-// ─── CELEBRATION ───────────────────────────────────────
+// ─── CELEBRATION ──────────────────────────────────────
 function showCelebration() {
     closeModal();
     finalMessage.innerHTML = FINAL_MESSAGE;
@@ -469,32 +565,43 @@ function showCelebration() {
     launchConfetti();
 }
 
-function closeCelebration() { celebrationOverlay.classList.add('hidden'); }
+function closeCelebration() {
+    celebrationOverlay.classList.add('hidden');
+}
 
+// ─── CONFETTI ─────────────────────────────────────────
 function launchConfetti() {
     const canvas = document.getElementById('confetti-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
+    const confetti = [];
     const colors = ['#d4a844', '#f0d080', '#7744aa', '#4488cc', '#44aa66', '#ff6644', '#ff44aa'];
-    const confetti = Array.from({ length: 150 }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height - canvas.height,
-        w: Math.random() * 10 + 5,
-        h: Math.random() * 6 + 3,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        speed: Math.random() * 3 + 2,
-        angle: Math.random() * Math.PI * 2,
-        spin: (Math.random() - 0.5) * 0.2,
-        drift: (Math.random() - 0.5) * 2
-    }));
+
+    for (let i = 0; i < 150; i++) {
+        confetti.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            w: Math.random() * 10 + 5,
+            h: Math.random() * 6 + 3,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speed: Math.random() * 3 + 2,
+            angle: Math.random() * Math.PI * 2,
+            spin: (Math.random() - 0.5) * 0.2,
+            drift: (Math.random() - 0.5) * 2
+        });
+    }
 
     let frame = 0;
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         confetti.forEach(c => {
-            c.y += c.speed; c.x += c.drift; c.angle += c.spin;
+            c.y += c.speed;
+            c.x += c.drift;
+            c.angle += c.spin;
+
             ctx.save();
             ctx.translate(c.x, c.y);
             ctx.rotate(c.angle);
@@ -503,79 +610,104 @@ function launchConfetti() {
             ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
             ctx.restore();
         });
-        if (++frame < 300 && !celebrationOverlay.classList.contains('hidden')) requestAnimationFrame(animate);
+
+        frame++;
+        if (frame < 300 && !celebrationOverlay.classList.contains('hidden')) {
+            requestAnimationFrame(animate);
+        }
     }
+
     animate();
 }
 
-// ─── CLICK PARTICLES ───────────────────────────────────
+// ─── CLICK PARTICLES ──────────────────────────────────
 function spawnClickParticles(x, y) {
     for (let i = 0; i < 10; i++) {
-        const p = document.createElement('div');
-        p.className = 'click-particle';
-        p.style.setProperty('--dx', `${(Math.random() - 0.5) * 80}px`);
-        p.style.left = `${x + (Math.random() - 0.5) * 14}px`;
-        p.style.top = `${y + (Math.random() - 0.5) * 14}px`;
-        p.style.animationDelay = `${Math.random() * 0.2}s`;
-        document.body.appendChild(p);
-        setTimeout(() => p.remove(), 1100);
+        const particle = document.createElement('div');
+        particle.className = 'click-particle';
+
+        const dx = (Math.random() - 0.5) * 80;
+        particle.style.setProperty('--dx', `${dx}px`);
+
+        const dy = (Math.random() - 0.5) * 20;
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y + dy}px`;
+        particle.style.animationDelay = `${Math.random() * 0.2}s`;
+
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 1100);
     }
 }
 
-// ─── AMBIENT PARTICLES ─────────────────────────────────
+// ─── AMBIENT PARTICLE SYSTEM ──────────────────────────
 function initParticles() {
     const ctx = particleCanvas.getContext('2d');
+    let particles = [];
 
     function resize() {
-        particleCanvas.width = particleCanvas.offsetWidth;
-        particleCanvas.height = particleCanvas.offsetHeight;
+        particleCanvas.width = window.innerWidth;
+        particleCanvas.height = window.innerHeight;
     }
+
     resize();
     window.addEventListener('resize', resize);
 
-    const particles = Array.from({ length: 40 }, () => ({
-        x: Math.random() * particleCanvas.width,
-        y: Math.random() * particleCanvas.height,
-        size: Math.random() * 2 + 0.5,
-        speedY: -(Math.random() * 0.4 + 0.08),
-        speedX: (Math.random() - 0.5) * 0.25,
-        opacity: Math.random() * 0.4 + 0.08,
-        flickerSpeed: Math.random() * 0.02 + 0.005,
-        flickerOffset: Math.random() * Math.PI * 2
-    }));
+    // Create ambient particles
+    for (let i = 0; i < 40; i++) {
+        particles.push({
+            x: Math.random() * particleCanvas.width,
+            y: Math.random() * particleCanvas.height,
+            size: Math.random() * 2 + 0.5,
+            speedY: -(Math.random() * 0.4 + 0.08),
+            speedX: (Math.random() - 0.5) * 0.25,
+            opacity: Math.random() * 0.4 + 0.08,
+            flickerSpeed: Math.random() * 0.02 + 0.005,
+            flickerOffset: Math.random() * Math.PI * 2
+        });
+    }
 
-    function animate() {
+    function animateParticles() {
         ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+
         particles.forEach(p => {
-            p.y += p.speedY; p.x += p.speedX;
+            p.y += p.speedY;
+            p.x += p.speedX;
+
             const flicker = Math.sin(Date.now() * p.flickerSpeed + p.flickerOffset) * 0.3 + 0.7;
+
             if (p.y < -10) p.y = particleCanvas.height + 10;
             if (p.x < -10) p.x = particleCanvas.width + 10;
             if (p.x > particleCanvas.width + 10) p.x = -10;
 
+            // Core dot
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(212,168,68,${p.opacity * flicker})`;
+            ctx.fillStyle = `rgba(212, 168, 68, ${p.opacity * flicker})`;
             ctx.fill();
 
+            // Soft glow halo
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(212,168,68,${p.opacity * flicker * 0.12})`;
+            ctx.fillStyle = `rgba(212, 168, 68, ${p.opacity * flicker * 0.12})`;
             ctx.fill();
         });
-        requestAnimationFrame(animate);
+
+        requestAnimationFrame(animateParticles);
     }
-    animate();
+
+    animateParticles();
 }
 
-// ─── CLICK SOUND ───────────────────────────────────────
+// ─── CLICK SOUND ──────────────────────────────────────
 function playClickSound() {
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+        // Magical chime
         const osc1 = audioCtx.createOscillator();
         const gain1 = audioCtx.createGain();
-        osc1.connect(gain1); gain1.connect(audioCtx.destination);
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
         osc1.type = 'sine';
         osc1.frequency.setValueAtTime(800, audioCtx.currentTime);
         osc1.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
@@ -585,9 +717,11 @@ function playClickSound() {
         osc1.start(audioCtx.currentTime);
         osc1.stop(audioCtx.currentTime + 0.5);
 
+        // Second harmonic
         const osc2 = audioCtx.createOscillator();
         const gain2 = audioCtx.createGain();
-        osc2.connect(gain2); gain2.connect(audioCtx.destination);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
         osc2.type = 'triangle';
         osc2.frequency.setValueAtTime(1200, audioCtx.currentTime + 0.05);
         osc2.frequency.exponentialRampToValueAtTime(1600, audioCtx.currentTime + 0.15);
@@ -596,8 +730,10 @@ function playClickSound() {
         gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
         osc2.start(audioCtx.currentTime + 0.05);
         osc2.stop(audioCtx.currentTime + 0.5);
-    } catch (e) { }
+    } catch (e) {
+        // Audio not supported — fail silently
+    }
 }
 
-// ─── START ─────────────────────────────────────────────
+// ─── INITIALIZE ───────────────────────────────────────
 document.addEventListener('DOMContentLoaded', init);

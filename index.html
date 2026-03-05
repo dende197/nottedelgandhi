@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Il Laboratorio Arcano — Esplora e Scopri</title>
-    <meta name="description"
-        content="Un laboratorio alchemico interattivo: clicca sugli oggetti, scopri le loro storie e risolvi il mistero!">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -54,7 +52,7 @@
             display: none !important;
         }
 
-        /* ── INTRO ── */
+        /* INTRO */
         #intro-screen {
             position: fixed;
             inset: 0;
@@ -68,34 +66,29 @@
 
         @keyframes introGlow {
             0% {
-                background: radial-gradient(ellipse at center, #1a1428 0%, #0a0810 70%, #000005 100%);
+                background: radial-gradient(ellipse at center, #1a1428 0%, #0a0810 70%, #000005 100%)
             }
 
             100% {
-                background: radial-gradient(ellipse at center, #201838 0%, #0c0a14 70%, #000008 100%);
+                background: radial-gradient(ellipse at center, #201838 0%, #0c0a14 70%, #000008 100%)
             }
         }
 
         .intro-particles {
             position: absolute;
             inset: 0;
-            background-image:
-                radial-gradient(2px 2px at 20% 30%, rgba(212, 168, 68, 0.4), transparent),
-                radial-gradient(2px 2px at 40% 70%, rgba(212, 168, 68, 0.3), transparent),
-                radial-gradient(2px 2px at 60% 20%, rgba(100, 140, 255, 0.3), transparent),
-                radial-gradient(2px 2px at 80% 50%, rgba(212, 168, 68, 0.2), transparent),
-                radial-gradient(2px 2px at 50% 50%, rgba(119, 68, 170, 0.3), transparent);
+            background-image: radial-gradient(2px 2px at 20% 30%, rgba(212, 168, 68, .4), transparent), radial-gradient(2px 2px at 40% 70%, rgba(212, 168, 68, .3), transparent), radial-gradient(2px 2px at 60% 20%, rgba(100, 140, 255, .3), transparent), radial-gradient(2px 2px at 80% 50%, rgba(212, 168, 68, .2), transparent), radial-gradient(2px 2px at 50% 50%, rgba(119, 68, 170, .3), transparent);
             background-size: 300px 300px, 400px 400px, 350px 350px, 250px 250px, 320px 320px;
             animation: particleDrift 20s linear infinite;
         }
 
         @keyframes particleDrift {
             0% {
-                transform: translateY(0) translateX(0);
+                transform: translateY(0) translateX(0)
             }
 
             100% {
-                transform: translateY(-300px) translateX(50px);
+                transform: translateY(-300px) translateX(50px)
             }
         }
 
@@ -108,12 +101,12 @@
         @keyframes fadeInUp {
             0% {
                 opacity: 0;
-                transform: translateY(40px);
+                transform: translateY(40px)
             }
 
             100% {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0)
             }
         }
 
@@ -122,19 +115,19 @@
             font-size: clamp(2rem, 6vw, 4.5rem);
             font-weight: 900;
             color: var(--gold);
-            letter-spacing: 0.08em;
+            letter-spacing: .08em;
             margin-bottom: 1rem;
-            text-shadow: 0 0 20px rgba(212, 168, 68, 0.5), 0 0 60px rgba(212, 168, 68, 0.2);
             animation: titleShimmer 3s ease-in-out infinite alternate;
+            text-shadow: 0 0 20px rgba(212, 168, 68, .5), 0 0 60px rgba(212, 168, 68, .2);
         }
 
         @keyframes titleShimmer {
             0% {
-                text-shadow: 0 0 20px rgba(212, 168, 68, 0.5), 0 0 60px rgba(212, 168, 68, 0.2);
+                text-shadow: 0 0 20px rgba(212, 168, 68, .5), 0 0 60px rgba(212, 168, 68, .2)
             }
 
             100% {
-                text-shadow: 0 0 30px rgba(212, 168, 68, 0.7), 0 0 80px rgba(212, 168, 68, 0.3);
+                text-shadow: 0 0 30px rgba(212, 168, 68, .7), 0 0 80px rgba(212, 168, 68, .3)
             }
         }
 
@@ -145,7 +138,7 @@
             font-style: italic;
             margin-bottom: 3rem;
             opacity: 0;
-            animation: fadeInUp 1.5s ease-out 0.5s forwards;
+            animation: fadeInUp 1.5s ease-out .5s forwards;
         }
 
         #start-btn {
@@ -153,24 +146,24 @@
             align-items: center;
             gap: 12px;
             padding: 16px 40px;
-            background: linear-gradient(135deg, rgba(212, 168, 68, 0.2), rgba(119, 68, 170, 0.2));
+            background: linear-gradient(135deg, rgba(212, 168, 68, .2), rgba(119, 68, 170, .2));
             border: 2px solid var(--gold);
             border-radius: 50px;
             color: var(--gold-light);
             font-family: var(--font-title);
             font-size: 1.1rem;
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: .1em;
             cursor: pointer;
-            transition: all 0.4s ease;
+            transition: all .4s ease;
             opacity: 0;
             animation: fadeInUp 1.5s ease-out 1s forwards;
         }
 
         #start-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(212, 168, 68, 0.4);
-            background: linear-gradient(135deg, rgba(212, 168, 68, 0.35), rgba(119, 68, 170, 0.35));
+            box-shadow: 0 0 30px rgba(212, 168, 68, .4);
+            background: linear-gradient(135deg, rgba(212, 168, 68, .35), rgba(119, 68, 170, .35));
         }
 
         .btn-icon {
@@ -182,11 +175,11 @@
 
             0%,
             100% {
-                transform: translateY(0);
+                transform: translateY(0)
             }
 
             50% {
-                transform: translateY(-4px);
+                transform: translateY(-4px)
             }
         }
 
@@ -196,16 +189,16 @@
 
         @keyframes fadeOut {
             0% {
-                opacity: 1;
+                opacity: 1
             }
 
             100% {
                 opacity: 0;
-                pointer-events: none;
+                pointer-events: none
             }
         }
 
-        /* ── SCENE ── */
+        /* SCENE */
         #scene-container {
             position: absolute;
             inset: 0;
@@ -219,7 +212,7 @@
         .scene-wrapper {
             position: relative;
             width: min(100vw, calc(100vh * 1.7927));
-            aspect-ratio: 1280 / 714;
+            aspect-ratio: 1280/714;
             overflow: hidden;
             flex-shrink: 0;
         }
@@ -237,98 +230,28 @@
         #vignette-overlay {
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, .55) 100%);
             pointer-events: none;
             z-index: 10;
         }
 
-        /* ── MASK LAYER ── */
-        .mask-layer {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: none;
-        }
-
         /*
-         * ═══════════════════════════════════════════════════════
-         * GLOW SYSTEM — come funziona davvero
-         * ═══════════════════════════════════════════════════════
-         *
-         * .hotspot-glow-wrap  → wrapper senza maschera, riceve il
-         *                        filter:drop-shadow che "esce" fuori
-         *
-         * .hotspot-glow-inner → figlio con mask-image e background
-         *                        colorato: la maschera ritaglia la
-         *                        sagoma, i pixel colorati esistono,
-         *                        drop-shadow sul padre li illumina
-         *                        proiettando luce oltre il bordo.
-         *
-         * opacity sul wrapper → quasi zero = non si vede il "fill"
-         *                        ma il drop-shadow esterno sì
-         * ═══════════════════════════════════════════════════════
+         * GLOW CANVAS — sovrapposto alla scena, z-index 3
+         * Il JS disegna qui il bagliore esterno puro:
+         *  1. Disegna blob dorato sfocato (shadowBlur)
+         *  2. "Taglia via" l'interno con destination-out + la maschera PNG
+         *  → rimane SOLO la luce fuori dalla sagoma
          */
-        .hotspot-glow-wrap {
+        #glow-canvas {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.22s ease;
-            /* drop-shadow sul wrapper: viene proiettato FUORI dalla sagoma */
-            filter:
-                drop-shadow(0 0 8px rgba(255, 210, 80, 1.0)) drop-shadow(0 0 18px rgba(255, 185, 50, 0.85)) drop-shadow(0 0 32px rgba(255, 160, 30, 0.65)) drop-shadow(0 0 48px rgba(255, 140, 10, 0.40));
+            z-index: 3;
         }
 
-        .hotspot-glow-inner {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            /* colore dorato: i pixel esistono → drop-shadow funziona */
-            background: rgba(255, 220, 100, 0.08);
-            -webkit-mask-size: 100% 100%;
-            mask-size: 100% 100%;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-        }
-
-        /* Hover: glow visibile ma delicato */
-        .hotspot-glow-wrap.hover {
-            opacity: 0.75;
-        }
-
-        /* Active/click: glow pieno + pulse */
-        .hotspot-glow-wrap.active {
-            opacity: 1;
-            animation: glowPulse 1.6s ease-in-out infinite;
-        }
-
-        @keyframes glowPulse {
-
-            0%,
-            100% {
-                opacity: 1;
-                filter: drop-shadow(0 0 8px rgba(255, 210, 80, 1.0)) drop-shadow(0 0 18px rgba(255, 185, 50, 0.85)) drop-shadow(0 0 32px rgba(255, 160, 30, 0.65)) drop-shadow(0 0 48px rgba(255, 140, 10, 0.40));
-            }
-
-            50% {
-                opacity: 1;
-                filter: drop-shadow(0 0 12px rgba(255, 220, 100, 1.0)) drop-shadow(0 0 28px rgba(255, 200, 70, 0.90)) drop-shadow(0 0 50px rgba(255, 175, 40, 0.75)) drop-shadow(0 0 70px rgba(255, 150, 20, 0.50));
-            }
-        }
-
-        /* Discovered: verde tenue */
-        .hotspot-glow-wrap.discovered {
-            opacity: 0.45;
-            filter:
-                drop-shadow(0 0 6px rgba(100, 255, 180, 0.80)) drop-shadow(0 0 16px rgba(80, 220, 160, 0.55)) drop-shadow(0 0 28px rgba(60, 190, 130, 0.35));
-        }
-
-        /* ── HOTSPOT ── */
+        /* HOTSPOT */
         .hotspot {
             position: absolute;
             cursor: pointer;
@@ -349,17 +272,17 @@
 
             0%,
             100% {
-                opacity: 0.4;
-                transform: scale(1);
+                opacity: .4;
+                transform: scale(1)
             }
 
             50% {
                 opacity: 1;
-                transform: scale(1.08);
+                transform: scale(1.08)
             }
         }
 
-        /* ── PARTICLES ── */
+        /* PARTICLES */
         #particle-canvas {
             position: absolute;
             inset: 0;
@@ -375,21 +298,21 @@
             left: 50%;
             transform: translateX(-50%);
             font-family: var(--font-body);
-            color: rgba(212, 168, 68, 0.5);
-            font-size: clamp(0.7rem, 1.2vw, 1rem);
-            letter-spacing: 0.18em;
+            color: rgba(212, 168, 68, .5);
+            font-size: clamp(.7rem, 1.2vw, 1rem);
+            letter-spacing: .18em;
             font-style: italic;
             opacity: 0;
             pointer-events: none;
             z-index: 12;
             animation: hintFadeIn 2.5s ease 2s forwards;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, .9);
             white-space: nowrap;
         }
 
         @keyframes hintFadeIn {
             to {
-                opacity: 1;
+                opacity: 1
             }
         }
 
@@ -400,24 +323,24 @@
             border-radius: 50%;
             background: #f0c040;
             pointer-events: none;
-            animation: floatParticle 0.9s ease-out forwards;
+            animation: floatParticle .9s ease-out forwards;
             z-index: 999;
-            box-shadow: 0 0 6px rgba(240, 192, 64, 0.8);
+            box-shadow: 0 0 6px rgba(240, 192, 64, .8);
         }
 
         @keyframes floatParticle {
             0% {
                 opacity: 1;
-                transform: translate(0, 0) scale(1);
+                transform: translate(0, 0) scale(1)
             }
 
             100% {
                 opacity: 0;
-                transform: translate(var(--dx), -45px) scale(0);
+                transform: translate(var(--dx), -45px) scale(0)
             }
         }
 
-        /* ── MODAL ── */
+        /* MODAL */
         #modal-overlay {
             position: fixed;
             inset: 0;
@@ -425,19 +348,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, .75);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            animation: modalOverlayIn 0.4s ease;
+            animation: modalOverlayIn .4s ease;
         }
 
         @keyframes modalOverlayIn {
             0% {
-                opacity: 0;
+                opacity: 0
             }
 
             100% {
-                opacity: 1;
+                opacity: 1
             }
         }
 
@@ -445,23 +368,23 @@
             position: relative;
             max-width: 520px;
             width: 90%;
-            background: linear-gradient(145deg, rgba(20, 15, 35, 0.95), rgba(10, 8, 20, 0.98));
-            border: 1px solid rgba(212, 168, 68, 0.3);
+            background: linear-gradient(145deg, rgba(20, 15, 35, .95), rgba(10, 8, 20, .98));
+            border: 1px solid rgba(212, 168, 68, .3);
             border-radius: 20px;
             padding: 40px 36px 32px;
-            box-shadow: 0 0 40px rgba(212, 168, 68, 0.15), var(--shadow-deep);
-            animation: modalSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 40px rgba(212, 168, 68, .15), var(--shadow-deep);
+            animation: modalSlideIn .5s cubic-bezier(.34, 1.56, .64, 1);
         }
 
         @keyframes modalSlideIn {
             0% {
                 opacity: 0;
-                transform: scale(0.8) translateY(30px);
+                transform: scale(.8) translateY(30px)
             }
 
             100% {
                 opacity: 1;
-                transform: scale(1) translateY(0);
+                transform: scale(1) translateY(0)
             }
         }
 
@@ -480,30 +403,30 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            transition: all 0.3s;
+            transition: all .3s;
         }
 
         #modal-close:hover {
             color: var(--gold);
-            background: rgba(212, 168, 68, 0.1);
+            background: rgba(212, 168, 68, .1);
         }
 
         #modal-icon {
             font-size: 3rem;
             text-align: center;
             margin-bottom: 12px;
-            animation: iconSpin 0.8s ease-out;
+            animation: iconSpin .8s ease-out;
         }
 
         @keyframes iconSpin {
             0% {
-                transform: rotateY(-180deg) scale(0.5);
-                opacity: 0;
+                transform: rotateY(-180deg) scale(.5);
+                opacity: 0
             }
 
             100% {
                 transform: rotateY(0deg) scale(1);
-                opacity: 1;
+                opacity: 1
             }
         }
 
@@ -536,8 +459,8 @@
             align-items: flex-start;
             gap: 10px;
             padding: 14px 18px;
-            background: rgba(212, 168, 68, 0.08);
-            border: 1px solid rgba(212, 168, 68, 0.2);
+            background: rgba(212, 168, 68, .08);
+            border: 1px solid rgba(212, 168, 68, .2);
             border-radius: 12px;
             margin-bottom: 16px;
         }
@@ -548,7 +471,7 @@
         }
 
         #modal-clue-text {
-            font-size: 0.95rem;
+            font-size: .95rem;
             color: var(--gold-light);
             font-style: italic;
             line-height: 1.5;
@@ -558,35 +481,35 @@
             text-align: center;
             color: var(--accent-green);
             font-family: var(--font-title);
-            font-size: 0.9rem;
+            font-size: .9rem;
             font-weight: 700;
-            animation: badgePop 0.5s ease 0.3s both;
+            animation: badgePop .5s ease .3s both;
         }
 
         @keyframes badgePop {
             0% {
                 opacity: 0;
-                transform: scale(0.5);
+                transform: scale(.5)
             }
 
             60% {
-                transform: scale(1.2);
+                transform: scale(1.2)
             }
 
             100% {
                 opacity: 1;
-                transform: scale(1);
+                transform: scale(1)
             }
         }
 
-        /* ── PROGRESS ── */
+        /* PROGRESS */
         #progress-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             z-index: 50;
-            background: linear-gradient(180deg, transparent, rgba(10, 8, 18, 0.9) 30%, rgba(10, 8, 18, 0.95));
+            background: linear-gradient(180deg, transparent, rgba(10, 8, 18, .9) 30%, rgba(10, 8, 18, .95));
             padding: 16px 24px 20px;
             display: flex;
             flex-direction: column;
@@ -599,7 +522,7 @@
             align-items: center;
             gap: 8px;
             font-family: var(--font-title);
-            font-size: 0.85rem;
+            font-size: .85rem;
             color: var(--text-secondary);
         }
 
@@ -614,39 +537,39 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, .05);
+            border: 2px solid rgba(255, 255, 255, .1);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.1rem;
-            filter: grayscale(1) opacity(0.4);
-            transition: all 0.5s ease;
+            filter: grayscale(1) opacity(.4);
+            transition: all .5s ease;
         }
 
         .progress-item.found {
             filter: grayscale(0) opacity(1);
             border-color: var(--gold);
-            background: rgba(212, 168, 68, 0.15);
-            box-shadow: 0 0 12px rgba(212, 168, 68, 0.3);
-            animation: itemFound 0.6s ease;
+            background: rgba(212, 168, 68, .15);
+            box-shadow: 0 0 12px rgba(212, 168, 68, .3);
+            animation: itemFound .6s ease;
         }
 
         @keyframes itemFound {
             0% {
-                transform: scale(0.5) rotate(-180deg);
+                transform: scale(.5) rotate(-180deg)
             }
 
             60% {
-                transform: scale(1.3) rotate(10deg);
+                transform: scale(1.3) rotate(10deg)
             }
 
             100% {
-                transform: scale(1) rotate(0deg);
+                transform: scale(1) rotate(0deg)
             }
         }
 
-        /* ── BUTTONS ── */
+        /* BUTTONS */
         #hint-btn,
         #reset-btn,
         #journal-btn {
@@ -656,37 +579,37 @@
             height: 48px;
             border-radius: 50%;
             background: var(--bg-glass);
-            border: 1px solid rgba(212, 168, 68, 0.25);
+            border: 1px solid rgba(212, 168, 68, .25);
             color: var(--gold);
             font-size: 1.3rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: all .3s ease;
             backdrop-filter: blur(8px);
         }
 
         #hint-btn {
             top: 20px;
-            right: 20px;
+            right: 20px
         }
 
         #reset-btn {
             top: 20px;
-            right: 78px;
+            right: 78px
         }
 
         #journal-btn {
             top: 20px;
-            right: 136px;
+            right: 136px
         }
 
         #hint-btn:hover,
         #reset-btn:hover,
         #journal-btn:hover {
-            background: rgba(212, 168, 68, 0.2);
-            box-shadow: 0 0 20px rgba(212, 168, 68, 0.3);
+            background: rgba(212, 168, 68, .2);
+            box-shadow: 0 0 20px rgba(212, 168, 68, .3);
             transform: scale(1.1);
         }
 
@@ -699,7 +622,7 @@
             height: 10px;
             border-radius: 50%;
             background: var(--accent-green);
-            box-shadow: 0 0 8px rgba(68, 170, 102, 0.6);
+            box-shadow: 0 0 8px rgba(68, 170, 102, .6);
             animation: notifPulse 2s ease-in-out infinite;
         }
 
@@ -708,16 +631,16 @@
             0%,
             100% {
                 transform: scale(1);
-                opacity: 1;
+                opacity: 1
             }
 
             50% {
                 transform: scale(1.4);
-                opacity: 0.6;
+                opacity: .6
             }
         }
 
-        /* ── JOURNAL ── */
+        /* JOURNAL */
         #journal-panel {
             position: fixed;
             inset: 0;
@@ -725,7 +648,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, .8);
             backdrop-filter: blur(12px);
         }
 
@@ -734,21 +657,21 @@
             width: 92%;
             max-height: 80vh;
             overflow-y: auto;
-            background: linear-gradient(145deg, rgba(25, 18, 40, 0.97), rgba(12, 8, 22, 0.99));
-            border: 1px solid rgba(212, 168, 68, 0.25);
+            background: linear-gradient(145deg, rgba(25, 18, 40, .97), rgba(12, 8, 22, .99));
+            border: 1px solid rgba(212, 168, 68, .25);
             border-radius: 20px;
             padding: 32px;
-            box-shadow: 0 0 50px rgba(212, 168, 68, 0.1);
-            animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 50px rgba(212, 168, 68, .1);
+            animation: modalSlideIn .4s cubic-bezier(.34, 1.56, .64, 1);
         }
 
         .journal-inner::-webkit-scrollbar {
-            width: 6px;
+            width: 6px
         }
 
         .journal-inner::-webkit-scrollbar-thumb {
-            background: rgba(212, 168, 68, 0.25);
-            border-radius: 3px;
+            background: rgba(212, 168, 68, .25);
+            border-radius: 3px
         }
 
         .journal-header {
@@ -757,7 +680,7 @@
             justify-content: space-between;
             margin-bottom: 24px;
             padding-bottom: 16px;
-            border-bottom: 1px solid rgba(212, 168, 68, 0.15);
+            border-bottom: 1px solid rgba(212, 168, 68, .15);
         }
 
         .journal-title {
@@ -778,95 +701,95 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            transition: all 0.3s;
+            transition: all .3s;
         }
 
         #journal-close:hover {
             color: var(--gold);
-            background: rgba(212, 168, 68, 0.1);
+            background: rgba(212, 168, 68, .1)
         }
 
         .journal-entry {
             padding: 16px;
             margin-bottom: 12px;
             border-radius: 12px;
-            border: 1px solid rgba(212, 168, 68, 0.12);
-            background: rgba(212, 168, 68, 0.03);
+            border: 1px solid rgba(212, 168, 68, .12);
+            background: rgba(212, 168, 68, .03)
         }
 
         .journal-entry.locked {
-            opacity: 0.4;
-            border-color: rgba(255, 255, 255, 0.05);
-            background: rgba(255, 255, 255, 0.02);
+            opacity: .4;
+            border-color: rgba(255, 255, 255, .05);
+            background: rgba(255, 255, 255, .02)
         }
 
         .journal-entry-header {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 8px;
+            margin-bottom: 8px
         }
 
         .journal-entry-icon {
-            font-size: 1.3rem;
+            font-size: 1.3rem
         }
 
         .journal-entry-name {
             font-family: var(--font-title);
-            font-size: 0.95rem;
-            color: var(--gold);
+            font-size: .95rem;
+            color: var(--gold)
         }
 
         .journal-entry.locked .journal-entry-name {
-            color: var(--text-secondary);
+            color: var(--text-secondary)
         }
 
         .journal-entry-clue {
-            font-size: 0.9rem;
+            font-size: .9rem;
             font-style: italic;
             color: var(--gold-light);
             line-height: 1.5;
-            padding-left: 32px;
+            padding-left: 32px
         }
 
         .journal-entry.locked .journal-entry-clue {
-            color: var(--text-secondary);
+            color: var(--text-secondary)
         }
 
-        /* ── TOOLTIP ── */
+        /* TOOLTIP */
         .hint-tooltip {
             position: fixed;
             top: 76px;
             right: 20px;
             z-index: 60;
             background: var(--bg-card);
-            border: 1px solid rgba(212, 168, 68, 0.3);
+            border: 1px solid rgba(212, 168, 68, .3);
             border-radius: 12px;
             padding: 14px 18px;
-            font-size: 0.95rem;
+            font-size: .95rem;
             color: var(--text-primary);
             max-width: 280px;
             box-shadow: var(--shadow-deep);
-            animation: tooltipIn 0.3s ease;
+            animation: tooltipIn .3s ease
         }
 
         @keyframes tooltipIn {
             0% {
                 opacity: 0;
-                transform: translateY(-10px);
+                transform: translateY(-10px)
             }
 
             100% {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0)
             }
         }
 
         .hint-tooltip.fade-out {
-            animation: fadeOut 0.3s ease forwards;
+            animation: fadeOut .3s ease forwards
         }
 
-        /* ── CELEBRATION ── */
+        /* CELEBRATION */
         #celebration-overlay {
             position: fixed;
             inset: 0;
@@ -874,8 +797,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, .85);
+            backdrop-filter: blur(10px)
         }
 
         #confetti-canvas {
@@ -883,26 +806,26 @@
             inset: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            pointer-events: none
         }
 
         .celebration-content {
             z-index: 1;
             text-align: center;
-            animation: celebrationIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: celebrationIn .8s cubic-bezier(.34, 1.56, .64, 1);
             max-width: 600px;
-            padding: 20px;
+            padding: 20px
         }
 
         @keyframes celebrationIn {
             0% {
                 opacity: 0;
-                transform: scale(0.5);
+                transform: scale(.5)
             }
 
             100% {
                 opacity: 1;
-                transform: scale(1);
+                transform: scale(1)
             }
         }
 
@@ -910,26 +833,26 @@
             font-family: var(--font-title);
             font-size: clamp(2rem, 5vw, 3.5rem);
             color: var(--gold);
-            text-shadow: 0 0 30px rgba(212, 168, 68, 0.5);
-            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(212, 168, 68, .5);
+            margin-bottom: 1rem
         }
 
         .celebration-subtitle {
             font-size: 1.3rem;
             color: var(--text-primary);
-            margin-bottom: 2rem;
+            margin-bottom: 2rem
         }
 
         #final-message {
-            background: rgba(212, 168, 68, 0.08);
-            border: 1px solid rgba(212, 168, 68, 0.25);
+            background: rgba(212, 168, 68, .08);
+            border: 1px solid rgba(212, 168, 68, .25);
             border-radius: 16px;
             padding: 24px;
             margin-bottom: 2rem;
             font-size: 1.1rem;
             line-height: 1.7;
             color: var(--gold-light);
-            font-style: italic;
+            font-style: italic
         }
 
         #celebration-close {
@@ -942,23 +865,23 @@
             font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all .3s ease
         }
 
         #celebration-close:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(212, 168, 68, 0.5);
+            box-shadow: 0 0 25px rgba(212, 168, 68, .5)
         }
 
-        @media (max-width: 768px) {
+        @media(max-width:768px) {
             #modal {
-                padding: 32px 24px 24px;
+                padding: 32px 24px 24px
             }
 
             .progress-item {
                 width: 34px;
                 height: 34px;
-                font-size: 0.9rem;
+                font-size: .9rem
             }
 
             #hint-btn,
@@ -966,22 +889,22 @@
             #journal-btn {
                 width: 40px;
                 height: 40px;
-                font-size: 1.1rem;
+                font-size: 1.1rem
             }
 
             #hint-btn {
                 top: 14px;
-                right: 14px;
+                right: 14px
             }
 
             #reset-btn {
                 top: 14px;
-                right: 62px;
+                right: 62px
             }
 
             #journal-btn {
                 top: 14px;
-                right: 110px;
+                right: 110px
             }
         }
     </style>
@@ -994,10 +917,7 @@
         <div class="intro-content">
             <h1 class="intro-title">Il Laboratorio Arcano</h1>
             <p class="intro-subtitle">Esplora gli oggetti e scopri i segreti dell'alchimia...</p>
-            <button id="start-btn">
-                <span class="btn-icon">🔮</span>
-                <span>Inizia l'Esplorazione</span>
-            </button>
+            <button id="start-btn"><span class="btn-icon">🔮</span><span>Inizia l'Esplorazione</span></button>
         </div>
     </div>
 
@@ -1007,7 +927,8 @@
                 <source src="Animated_elements_in_static_scene_63f6e98135.mp4" type="video/mp4">
             </video>
             <div id="vignette-overlay"></div>
-            <div class="mask-layer" id="maskLayer"></div>
+            <!-- GLOW CANVAS: qui disegniamo il bagliore esterno puro -->
+            <canvas id="glow-canvas"></canvas>
             <canvas id="particle-canvas"></canvas>
             <div id="click-hint">✦ &nbsp; Esplora la stanza — alcuni oggetti nascondono segreti &nbsp; ✦</div>
         </div>
@@ -1020,19 +941,14 @@
             <h2 id="modal-title"></h2>
             <div id="modal-divider"></div>
             <p id="modal-story"></p>
-            <div id="modal-clue">
-                <span class="clue-icon">🗝️</span>
-                <span id="modal-clue-text"></span>
-            </div>
+            <div id="modal-clue"><span class="clue-icon">🗝️</span><span id="modal-clue-text"></span></div>
             <div id="modal-badge"><span>✨ Indizio Sbloccato!</span></div>
         </div>
     </div>
 
     <div id="progress-bar">
-        <div class="progress-label">
-            <span class="progress-icon">🗺️</span>
-            <span id="progress-text">0 / 7 segreti scoperti</span>
-        </div>
+        <div class="progress-label"><span class="progress-icon">🗺️</span><span id="progress-text">0 / 7 segreti
+                scoperti</span></div>
         <div class="progress-items" id="progress-items"></div>
     </div>
 
@@ -1064,57 +980,151 @@
         const SCENE_W = 1280, SCENE_H = 714;
 
         const OBJECTS = [
-            {
-                id: 'calderone', icon: '🔥', name: 'Il Calderone Alchemico', mask: 'Imported_Image-1.png', bbox: [580, 362, 723, 465],
-                story: 'Questo antico calderone di ferro battuto è stato forgiato nel XV secolo. Il fuoco blu che lo alimenta non è una fiamma ordinaria: è una reazione esotermica ottenuta mescolando sali di rame con alcol etilico. Gli alchimisti lo usavano per le loro trasmutazioni, convinti di poter trasformare il piombo in oro.',
-                clue: 'La fiamma blu brucia a 1085°C — la temperatura di fusione del rame. Ricorda questo numero...'
-            },
-            {
-                id: 'ampolla', icon: '⚗️', name: "L'Ampolla di Vetro", mask: 'Imported_Image-2.png', bbox: [741, 422, 793, 592],
-                story: "Una sottile ampolla di vetro soffiato a mano, probabilmente di fattura veneziana. Contiene un liquido che cambia colore alla luce — un fenomeno detto fluorescenza, scoperto da George Stokes nel 1852. Sul fondo un'iscrizione incisa: \"Una goccia basta.\"",
-                clue: 'Il liquido fluorescente reagisce alla luce ultravioletta. La parola chiave è LUCE.'
-            },
-            {
-                id: 'libro', icon: '📖', name: 'Il Grimorio dei Segreti', mask: 'Imported_Image-3.png', bbox: [385, 503, 629, 601],
-                story: "Il grimorio è aperto su una pagina coperta di simboli che sembrano muoversi sotto la luce tremolante. Contiene centinaia di ricette alchemiche trascritte in latino medievale. Una parola è sottolineata tre volte: ATTENZIONE.",
-                clue: 'A pagina 42 si legge: "Aurum potabile" — l\'oro potabile era considerato l\'elisir della vita eterna.'
-            },
-            {
-                id: 'lente', icon: '🔍', name: "La Lente d'Ingrandimento", mask: 'Imported_Image-4.png', bbox: [665, 616, 721, 655],
-                story: "Attraverso questa lente convergente, i simboli sul tavolo appaiono completamente diversi. Le lenti furono perfezionate nel XIII secolo dai monaci benedettini.",
-                clue: "La lente rivela ciò che è nascosto. Come la scienza, mostra ciò che l'occhio non vede."
-            },
-            {
-                id: 'foglio', icon: '📄', name: 'Le Formule Segrete', mask: 'Imported_Image-5.png', bbox: [222, 197, 260, 241],
-                story: "Un foglio ingiallito coperto di formule chimiche e diagrammi alchemici. L'inchiostro è ancora fresco — qualcuno era qui poco fa. Si riconoscono simboli alchemici per zolfo, mercurio e sale.",
-                clue: 'Zolfo (🜍), Mercurio (☿), Sale (🜔) — i tre principi di Paracelso. La materia si TRASFORMA.'
-            },
-            {
-                id: 'ampolla-verde', icon: '🧪', name: "L'Ampolla Verde", mask: 'Imported_Image-6.png', bbox: [336, 415, 387, 507],
-                story: "Un'ampolla dal liquido verde brillante che pulsa debolmente. Il colore proviene dal solfato di rame disciolto. Paracelso diceva: \"Solo la dose fa il veleno.\"",
-                clue: '"Solo la dose fa il veleno" — vale per ogni sostanza. Anche l\'acqua può essere letale in dosi eccessive!'
-            },
-            {
-                id: 'cesto', icon: '🧺', name: 'Il Cesto delle Erbe', mask: 'Imported_Image-7.png', bbox: [224, 548, 298, 631],
-                story: "Un cesto di vimini intrecciato contiene erbe essiccate dal profumo insolito. Si riconoscono artemisia, verbena e un'erba sconosciuta dalle foglie blu.",
-                clue: 'Le erbe nascondono principi attivi. La chimica delle piante è la base della medicina moderna.'
-            }
+            { id: 'calderone', icon: '🔥', name: 'Il Calderone Alchemico', mask: 'Imported_Image-1.png', bbox: [580, 362, 723, 465], story: 'Questo antico calderone di ferro battuto è stato forgiato nel XV secolo. Il fuoco blu che lo alimenta non è una fiamma ordinaria: è una reazione esotermica ottenuta mescolando sali di rame con alcol etilico.', clue: 'La fiamma blu brucia a 1085°C — la temperatura di fusione del rame. Ricorda questo numero...' },
+            { id: 'ampolla', icon: '⚗️', name: "L'Ampolla di Vetro", mask: 'Imported_Image-2.png', bbox: [741, 422, 793, 592], story: 'Una sottile ampolla di vetro soffiato a mano, probabilmente di fattura veneziana. Contiene un liquido che cambia colore alla luce — un fenomeno detto fluorescenza, scoperto da George Stokes nel 1852.', clue: 'Il liquido fluorescente reagisce alla luce ultravioletta. La parola chiave è LUCE.' },
+            { id: 'libro', icon: '📖', name: 'Il Grimorio dei Segreti', mask: 'Imported_Image-3.png', bbox: [385, 503, 629, 601], story: 'Il grimorio è aperto su una pagina coperta di simboli che sembrano muoversi sotto la luce tremolante. Le pagine in pergamena di vitello sono state scritte con inchiostro ferro-gallico.', clue: 'A pagina 42 si legge: "Aurum potabile" — l\'oro potabile era considerato l\'elisir della vita eterna.' },
+            { id: 'lente', icon: '🔍', name: "La Lente d'Ingrandimento", mask: 'Imported_Image-4.png', bbox: [665, 616, 721, 655], story: 'Attraverso questa lente convergente, i simboli sul tavolo appaiono completamente diversi. Le lenti furono perfezionate nel XIII secolo dai monaci benedettini.', clue: "La lente rivela ciò che è nascosto. Come la scienza, mostra ciò che l'occhio non vede." },
+            { id: 'foglio', icon: '📄', name: 'Le Formule Segrete', mask: 'Imported_Image-5.png', bbox: [222, 197, 260, 241], story: "Un foglio ingiallito coperto di formule chimiche. L'inchiostro è ancora fresco — qualcuno era qui poco fa.", clue: 'Zolfo (🜍), Mercurio (☿), Sale (🜔) — i tre principi di Paracelso. La materia si TRASFORMA.' },
+            { id: 'ampolla-verde', icon: '🧪', name: "L'Ampolla Verde", mask: 'Imported_Image-6.png', bbox: [336, 415, 387, 507], story: 'Un\'ampolla dal liquido verde brillante che pulsa debolmente. Il colore proviene dal solfato di rame disciolto.', clue: '"Solo la dose fa il veleno" — vale per ogni sostanza. Anche l\'acqua può essere letale in dosi eccessive!' },
+            { id: 'cesto', icon: '🧺', name: 'Il Cesto delle Erbe', mask: 'Imported_Image-7.png', bbox: [224, 548, 298, 631], story: "Un cesto di vimini intrecciato contiene erbe essiccate dal profumo insolito. Si riconoscono artemisia, verbena e un'erba sconosciuta dalle foglie blu.", clue: 'Le erbe nascondono principi attivi. La chimica delle piante è la base della medicina moderna.' }
         ];
 
-        const FINAL_MESSAGE = `
-    <p><strong>🧬 Il Segreto del Laboratorio</strong></p>
-    <p>Hai scoperto il filo conduttore: la <strong>TRASFORMAZIONE</strong>.</p>
-    <p>Dall'alchimia alla chimica moderna, tutto ruota attorno al comprendere come la materia si trasforma.</p>
-    <p style="margin-top:16px;font-size:1.15rem;">✨ <em>"Nulla si crea, nulla si distrugge, tutto si trasforma."</em><br>— Antoine Lavoisier</p>
-`;
+        const FINAL_MESSAGE = `<p><strong>🧬 Il Segreto del Laboratorio</strong></p><p>Hai scoperto il filo conduttore: la <strong>TRASFORMAZIONE</strong>.</p><p style="margin-top:16px;font-size:1.15rem;">✨ <em>"Nulla si crea, nulla si distrugge, tutto si trasforma."</em><br>— Antoine Lavoisier</p>`;
 
+        /* ═══════════════════════════════════════════════════════
+           GLOW ENGINE — Canvas 2D puro
+           Tecnica: disegna la forma colorata con shadowBlur,
+           poi "buca" l'interno con destination-out + la PNG.
+           Risultato: luce SOLO esterna alla sagoma.
+           ═══════════════════════════════════════════════════════ */
+        const glowCanvas = document.getElementById('glow-canvas');
+        const glowCtx = glowCanvas.getContext('2d');
+
+        // Stato glow per ogni oggetto
+        // { img, alpha, targetAlpha, color }
+        const glowState = {};
+
+        // Precarica le PNG e inizializza lo stato
+        const maskImages = {};
+        let imagesLoaded = 0;
+
+        function preloadMasks() {
+            OBJECTS.forEach(obj => {
+                const img = new Image();
+                img.onload = () => {
+                    maskImages[obj.id] = img;
+                    imagesLoaded++;
+                };
+                img.onerror = () => {
+                    console.warn(`Mask non trovata: ${obj.mask}`);
+                    imagesLoaded++;
+                };
+                img.src = obj.mask;
+
+                glowState[obj.id] = {
+                    alpha: 0,
+                    targetAlpha: 0,
+                    // dorato hover, verde discovered
+                    color: { r: 255, g: 200, b: 60 }
+                };
+            });
+        }
+
+        // Ridimensiona il canvas al wrapper
+        function resizeGlowCanvas() {
+            const wrapper = document.querySelector('.scene-wrapper');
+            glowCanvas.width = wrapper.offsetWidth;
+            glowCanvas.height = wrapper.offsetHeight;
+        }
+
+        /*
+         * drawExternalGlowOnly:
+         *  1. Disegna la PNG con shadowBlur dorato → crea il bagliore
+         *  2. Sovrappone destination-out con la PNG stessa →
+         *     cancella i pixel interni → resta solo il bordo luminoso
+         */
+        function drawExternalGlowOnly(img, alpha, color, blur) {
+            if (!img || alpha <= 0.001) return;
+
+            const w = glowCanvas.width, h = glowCanvas.height;
+
+            // Layer temporaneo
+            const tmp = document.createElement('canvas');
+            tmp.width = w; tmp.height = h;
+            const ctx2 = tmp.getContext('2d');
+
+            // 1) Disegna la sagoma con shadow = bagliore
+            ctx2.shadowColor = `rgba(${color.r},${color.g},${color.b},${alpha})`;
+            ctx2.shadowBlur = blur;
+            // Disegna più volte per intensificare il glow
+            for (let i = 0; i < 3; i++) ctx2.drawImage(img, 0, 0, w, h);
+
+            // 2) Cancella l'interno (destination-out) per lasciare solo il bordo
+            ctx2.globalCompositeOperation = 'destination-out';
+            ctx2.shadowBlur = 0;
+            ctx2.shadowColor = 'transparent';
+            ctx2.globalAlpha = 1;
+            ctx2.drawImage(img, 0, 0, w, h);
+
+            // 3) Componi sul canvas principale
+            glowCtx.drawImage(tmp, 0, 0);
+        }
+
+        // Loop di render del glow
+        const LERP_SPEED = 0.08;  // velocità transizione
+        let rafGlow;
+
+        function glowLoop() {
+            glowCtx.clearRect(0, 0, glowCanvas.width, glowCanvas.height);
+
+            OBJECTS.forEach(obj => {
+                const st = glowState[obj.id];
+                // Interpolazione fluida verso il target
+                st.alpha += (st.targetAlpha - st.alpha) * LERP_SPEED;
+
+                const img = maskImages[obj.id];
+                if (!img) return;
+
+                if (st.alpha > 0.005) {
+                    drawExternalGlowOnly(img, Math.min(st.alpha, 1), st.color, 28);
+                }
+            });
+
+            rafGlow = requestAnimationFrame(glowLoop);
+        }
+
+        // API pubblica
+        function setGlow(objId, level, isDiscovered = false) {
+            /*
+             * level: 0 = off, 0.5 = hover, 1 = active
+             * isDiscovered: verde tenue sempre visibile
+             */
+            const st = glowState[objId];
+            if (!st) return;
+            if (isDiscovered && level === 0) {
+                st.color = { r: 80, g: 255, b: 160 };
+                st.targetAlpha = 0.3;
+            } else if (level > 0) {
+                st.color = { r: 255, g: 200, b: 60 };
+                st.targetAlpha = level;
+            } else {
+                if (discoveredObjects.has(objId)) {
+                    st.color = { r: 80, g: 255, b: 160 };
+                    st.targetAlpha = 0.3;
+                } else {
+                    st.targetAlpha = 0;
+                }
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+           GAME STATE & SCENE
+           ═══════════════════════════════════════════ */
         let discoveredObjects = new Set();
         const objectLayers = {};
 
-        // DOM refs
         const introScreen = document.getElementById('intro-screen');
         const scene = document.getElementById('scene');
-        const maskLayer = document.getElementById('maskLayer');
         const modalOverlay = document.getElementById('modal-overlay');
         const modalIcon = document.getElementById('modal-icon');
         const modalTitle = document.getElementById('modal-title');
@@ -1129,47 +1139,29 @@
         const finalMessage = document.getElementById('final-message');
         const particleCanvas = document.getElementById('particle-canvas');
 
-        /* ── INIT ── */
         function init() {
             try { const s = localStorage.getItem('lab_discovered'); if (s) discoveredObjects = new Set(JSON.parse(s)); } catch (e) { }
+            preloadMasks();
+            resizeGlowCanvas();
+            window.addEventListener('resize', () => { resizeGlowCanvas(); });
             buildScene();
             buildProgressBar();
             attachEvents();
             initParticles();
             updateProgress();
             updateJournal();
+            glowLoop();  // avvia il render loop
+
+            // Applica stato discovered a oggetti già trovati
+            discoveredObjects.forEach(id => setGlow(id, 0, true));
         }
 
         function saveState() {
             try { localStorage.setItem('lab_discovered', JSON.stringify([...discoveredObjects])); } catch (e) { }
         }
 
-        /* ── BUILD SCENE ── */
         function buildScene() {
             OBJECTS.forEach(obj => {
-                /*
-                 * STRUTTURA:
-                 *  maskLayer
-                 *    └─ .hotspot-glow-wrap   ← opacity + filter:drop-shadow qui
-                 *         └─ .hotspot-glow-inner  ← mask-image + background colorato
-                 *
-                 * Il drop-shadow viene applicato sul WRAPPER (nessuna maschera),
-                 * quindi il blur si propaga liberamente fuori dalla sagoma.
-                 * L'inner ha la maschera che ritaglia la forma e un background
-                 * leggermente visibile che "alimenta" il drop-shadow.
-                 */
-                const wrap = document.createElement('div');
-                wrap.className = 'hotspot-glow-wrap';
-
-                const inner = document.createElement('div');
-                inner.className = 'hotspot-glow-inner';
-                inner.style.webkitMaskImage = `url(${obj.mask})`;
-                inner.style.maskImage = `url(${obj.mask})`;
-
-                wrap.appendChild(inner);
-                maskLayer.appendChild(wrap);
-
-                /* Hotspot invisibile per i click */
                 const [x1, y1, x2, y2] = obj.bbox;
                 const hotspot = document.createElement('div');
                 hotspot.className = 'hotspot';
@@ -1179,28 +1171,19 @@
                 hotspot.style.width = ((x2 - x1) / SCENE_W * 100).toFixed(3) + '%';
                 hotspot.style.height = ((y2 - y1) / SCENE_H * 100).toFixed(3) + '%';
                 scene.appendChild(hotspot);
+                objectLayers[obj.id] = { hotspot };
 
-                objectLayers[obj.id] = { wrap, inner, hotspot };
-
-                /* Hover */
                 hotspot.addEventListener('mouseenter', () => {
-                    if (!wrap.classList.contains('active') && !wrap.classList.contains('discovered'))
-                        wrap.classList.add('hover');
+                    if (!discoveredObjects.has(obj.id)) setGlow(obj.id, 0.7);
+                    else setGlow(obj.id, 0.9);
                 });
                 hotspot.addEventListener('mouseleave', () => {
-                    if (!wrap.classList.contains('active'))
-                        wrap.classList.remove('hover');
+                    setGlow(obj.id, 0, discoveredObjects.has(obj.id));
                 });
-
-                /* Click */
                 hotspot.addEventListener('click', e => { e.stopPropagation(); onObjectClick(obj.id, e); });
-
-                /* Stato già scoperto */
-                if (discoveredObjects.has(obj.id)) wrap.classList.add('discovered');
             });
         }
 
-        /* ── PROGRESS BAR ── */
         function buildProgressBar() {
             progressItems.innerHTML = '';
             OBJECTS.forEach(obj => {
@@ -1212,7 +1195,6 @@
             });
         }
 
-        /* ── EVENTS ── */
         function attachEvents() {
             document.getElementById('start-btn').addEventListener('click', () => {
                 introScreen.classList.add('fade-out');
@@ -1227,44 +1209,27 @@
             document.getElementById('journal-close').addEventListener('click', closeJournal);
             journalPanel.addEventListener('click', e => { if (e.target === journalPanel) closeJournal(); });
             document.getElementById('celebration-close').addEventListener('click', () => celebOverlay.classList.add('hidden'));
-            scene.addEventListener('click', e => {
-                if (e.target === scene || e.target.classList.contains('scene-bg') ||
-                    e.target.id === 'vignette-overlay' || e.target.id === 'maskLayer') clearActiveStates();
-            });
         }
 
-        /* ── OBJECT CLICK ── */
         function onObjectClick(objId, event) {
             const obj = OBJECTS.find(o => o.id === objId); if (!obj) return;
-            const layers = objectLayers[objId];
-
             if (event) spawnClickParticles(event.clientX, event.clientY);
-
             const hint = document.getElementById('click-hint');
             if (hint) { hint.style.transition = 'opacity 0.5s'; hint.style.opacity = '0'; setTimeout(() => hint.remove(), 500); }
 
-            clearActiveStates();
-            layers.wrap.classList.add('active');
+            // Glow attivo su questo, scoperto sugli altri
+            OBJECTS.forEach(o => setGlow(o.id, 0, discoveredObjects.has(o.id)));
+            setGlow(objId, 1);
 
             const isNew = !discoveredObjects.has(objId);
             discoveredObjects.add(objId); saveState();
             openModal(obj, isNew); updateProgress();
             if (isNew) { journalBtn.classList.add('has-new'); updateJournal(); }
+            // Dopo aver scoperto, passa a verde
+            setTimeout(() => setGlow(objId, 0, true), 100);
             if (discoveredObjects.size === OBJECTS.length) setTimeout(showCelebration, 1500);
         }
 
-        /* ── CLEAR STATES ── */
-        function clearActiveStates() {
-            document.querySelectorAll('.hotspot-glow-wrap').forEach(el => el.classList.remove('active', 'hover'));
-            OBJECTS.forEach(obj => {
-                if (discoveredObjects.has(obj.id)) {
-                    const l = objectLayers[obj.id];
-                    if (l) l.wrap.classList.add('discovered');
-                }
-            });
-        }
-
-        /* ── TYPEWRITER ── */
         let twInterval = null;
         function typeWriter(text, el, speed = 25) {
             if (twInterval) { clearTimeout(twInterval); twInterval = null; }
@@ -1273,7 +1238,6 @@
             type();
         }
 
-        /* ── MODAL ── */
         function openModal(obj, isNew) {
             modalIcon.textContent = obj.icon; modalTitle.textContent = obj.name;
             typeWriter(obj.story, modalStory); modalClueText.textContent = obj.clue;
@@ -1285,16 +1249,14 @@
         }
         function closeModal() {
             if (twInterval) { clearTimeout(twInterval); twInterval = null; }
-            modalOverlay.classList.add('hidden'); clearActiveStates();
+            modalOverlay.classList.add('hidden');
         }
 
-        /* ── PROGRESS ── */
         function updateProgress() {
             progressText.textContent = `${discoveredObjects.size} / ${OBJECTS.length} segreti scoperti`;
             OBJECTS.forEach(obj => { const it = document.getElementById(`prog-${obj.id}`); if (it && discoveredObjects.has(obj.id)) it.classList.add('found'); });
         }
 
-        /* ── JOURNAL ── */
         function toggleJournal() { journalPanel.classList.contains('hidden') ? openJournal() : closeJournal(); }
         function openJournal() { journalBtn.classList.remove('has-new'); updateJournal(); journalPanel.classList.remove('hidden'); }
         function closeJournal() { journalPanel.classList.add('hidden'); }
@@ -1304,17 +1266,11 @@
                 const isFound = discoveredObjects.has(obj.id);
                 const entry = document.createElement('div');
                 entry.className = `journal-entry ${isFound ? 'unlocked' : 'locked'}`;
-                entry.innerHTML = `
-            <div class="journal-entry-header">
-                <span class="journal-entry-icon">${isFound ? obj.icon : '🔒'}</span>
-                <span class="journal-entry-name">${isFound ? obj.name : '???'}</span>
-            </div>
-            <div class="journal-entry-clue">${isFound ? obj.clue : 'Indizio non ancora scoperto...'}</div>`;
+                entry.innerHTML = `<div class="journal-entry-header"><span class="journal-entry-icon">${isFound ? obj.icon : '🔒'}</span><span class="journal-entry-name">${isFound ? obj.name : '???'}</span></div><div class="journal-entry-clue">${isFound ? obj.clue : 'Indizio non ancora scoperto...'}</div>`;
                 journalEntries.appendChild(entry);
             });
         }
 
-        /* ── HINT ── */
         function showHint() {
             removeHintTooltip();
             const undiscovered = OBJECTS.filter(o => !discoveredObjects.has(o.id));
@@ -1322,8 +1278,9 @@
             const target = undiscovered[Math.floor(Math.random() * undiscovered.length)];
             const l = objectLayers[target.id];
             if (l) {
-                l.wrap.classList.add('hover'); l.hotspot.classList.add('hint-highlight');
-                setTimeout(() => { l.wrap.classList.remove('hover'); l.hotspot.classList.remove('hint-highlight'); }, 3000);
+                setGlow(target.id, 0.8);
+                l.hotspot.classList.add('hint-highlight');
+                setTimeout(() => { setGlow(target.id, 0, false); l.hotspot.classList.remove('hint-highlight'); }, 3000);
             }
             showTooltip(`💡 Cerca ${target.icon} ${target.name}...`);
         }
@@ -1335,15 +1292,13 @@
         }
         function removeHintTooltip() { const e = document.getElementById('active-tooltip'); if (e) e.remove(); }
 
-        /* ── RESET ── */
         function resetGame() {
             if (!confirm('Vuoi ricominciare? Tutti i progressi saranno persi.')) return;
             discoveredObjects.clear(); localStorage.removeItem('lab_discovered');
-            document.querySelectorAll('.hotspot-glow-wrap').forEach(el => el.classList.remove('active', 'hover', 'discovered'));
+            OBJECTS.forEach(obj => setGlow(obj.id, 0, false));
             buildProgressBar(); updateProgress(); updateJournal();
         }
 
-        /* ── CELEBRATION ── */
         function showCelebration() {
             closeModal(); finalMessage.innerHTML = FINAL_MESSAGE;
             celebOverlay.classList.remove('hidden'); launchConfetti();
@@ -1352,60 +1307,43 @@
             const canvas = document.getElementById('confetti-canvas'), ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             const colors = ['#d4a844', '#f0d080', '#7744aa', '#4488cc', '#44aa66', '#ff6644', '#ff44aa'];
-            const confetti = Array.from({ length: 150 }, () => ({
-                x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height,
-                w: Math.random() * 10 + 5, h: Math.random() * 6 + 3,
-                color: colors[Math.floor(Math.random() * colors.length)],
-                speed: Math.random() * 3 + 2, angle: Math.random() * Math.PI * 2,
-                spin: (Math.random() - 0.5) * 0.2, drift: (Math.random() - 0.5) * 2
-            }));
+            const confetti = Array.from({ length: 150 }, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height, w: Math.random() * 10 + 5, h: Math.random() * 6 + 3, color: colors[Math.floor(Math.random() * colors.length)], speed: Math.random() * 3 + 2, angle: Math.random() * Math.PI * 2, spin: (Math.random() - .5) * .2, drift: (Math.random() - .5) * 2 }));
             let frame = 0;
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                confetti.forEach(c => {
-                    c.y += c.speed; c.x += c.drift; c.angle += c.spin;
-                    ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.angle);
-                    ctx.fillStyle = c.color; ctx.globalAlpha = Math.max(0, 1 - (c.y / canvas.height) * 0.5);
-                    ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore();
-                });
+                confetti.forEach(c => { c.y += c.speed; c.x += c.drift; c.angle += c.spin; ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.angle); ctx.fillStyle = c.color; ctx.globalAlpha = Math.max(0, 1 - (c.y / canvas.height) * .5); ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore(); });
                 if (++frame < 300 && !celebOverlay.classList.contains('hidden')) requestAnimationFrame(animate);
             }
             animate();
         }
 
-        /* ── CLICK PARTICLES ── */
         function spawnClickParticles(x, y) {
             for (let i = 0; i < 10; i++) {
                 const p = document.createElement('div'); p.className = 'click-particle';
-                p.style.setProperty('--dx', `${(Math.random() - 0.5) * 80}px`);
-                p.style.left = `${x + (Math.random() - 0.5) * 14}px`; p.style.top = `${y + (Math.random() - 0.5) * 14}px`;
-                p.style.animationDelay = `${Math.random() * 0.2}s`;
+                p.style.setProperty('--dx', `${(Math.random() - .5) * 80}px`);
+                p.style.left = `${x + (Math.random() - .5) * 14}px`; p.style.top = `${y + (Math.random() - .5) * 14}px`;
+                p.style.animationDelay = `${Math.random() * .2}s`;
                 document.body.appendChild(p); setTimeout(() => p.remove(), 1100);
             }
         }
 
-        /* ── AMBIENT PARTICLES ── */
         function initParticles() {
             const ctx = particleCanvas.getContext('2d');
             function resize() { particleCanvas.width = particleCanvas.offsetWidth; particleCanvas.height = particleCanvas.offsetHeight; }
             resize(); window.addEventListener('resize', resize);
-            const particles = Array.from({ length: 40 }, () => ({
-                x: Math.random() * particleCanvas.width, y: Math.random() * particleCanvas.height,
-                size: Math.random() * 2 + 0.5, speedY: -(Math.random() * 0.4 + 0.08), speedX: (Math.random() - 0.5) * 0.25,
-                opacity: Math.random() * 0.4 + 0.08, flickerSpeed: Math.random() * 0.02 + 0.005, flickerOffset: Math.random() * Math.PI * 2
-            }));
+            const particles = Array.from({ length: 40 }, () => ({ x: Math.random() * particleCanvas.width, y: Math.random() * particleCanvas.height, size: Math.random() * 2 + .5, speedY: -(Math.random() * .4 + .08), speedX: (Math.random() - .5) * .25, opacity: Math.random() * .4 + .08, flickerSpeed: Math.random() * .02 + .005, flickerOffset: Math.random() * Math.PI * 2 }));
             function animate() {
                 ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
                 particles.forEach(p => {
                     p.y += p.speedY; p.x += p.speedX;
-                    const fl = Math.sin(Date.now() * p.flickerSpeed + p.flickerOffset) * 0.3 + 0.7;
+                    const fl = Math.sin(Date.now() * p.flickerSpeed + p.flickerOffset) * .3 + .7;
                     if (p.y < -10) p.y = particleCanvas.height + 10;
                     if (p.x < -10) p.x = particleCanvas.width + 10;
                     if (p.x > particleCanvas.width + 10) p.x = -10;
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(212,168,68,${p.opacity * fl})`; ctx.fill();
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(212,168,68,${p.opacity * fl * 0.12})`; ctx.fill();
+                    ctx.fillStyle = `rgba(212,168,68,${p.opacity * fl * .12})`; ctx.fill();
                 });
                 requestAnimationFrame(animate);
             }

@@ -3,18 +3,16 @@
    Edge-Glow Mask System + Journal Feature
    ═══════════════════════════════════════════════════════ */
 
-// ─── SCENE DIMENSIONS (mask reference) ─────────────────
 const SCENE_W = 1280;
 const SCENE_H = 714;
 
-// ─── GAME DATA ─────────────────────────────────────────
 const OBJECTS = [
     {
         id: 'calderone',
         icon: '🔥',
         name: 'Il Calderone Alchemico',
         mask: 'Imported_Image-1.png',
-        bbox: [583, 372, 721, 461],
+        bbox: [580, 362, 723, 465],
         story: 'Questo antico calderone di ferro battuto è stato forgiato nel XV secolo. Il fuoco blu che lo alimenta non è una fiamma ordinaria: è una reazione esotermica ottenuta mescolando sali di rame con alcol etilico. Gli alchimisti lo usavano per le loro trasmutazioni, convinti di poter trasformare il piombo in oro.',
         clue: 'La fiamma blu brucia a 1085°C — la temperatura di fusione del rame. Ricorda questo numero...'
     },
@@ -23,7 +21,7 @@ const OBJECTS = [
         icon: '⚗️',
         name: 'L\'Ampolla di Vetro',
         mask: 'Imported_Image-2.png',
-        bbox: [743, 423, 788, 589],
+        bbox: [741, 422, 793, 592],
         story: 'Una sottile ampolla di vetro soffiato a mano, probabilmente di fattura veneziana. Contiene un liquido che cambia colore alla luce — un fenomeno detto fluorescenza, scoperto da George Stokes nel 1852. Sul fondo un\'iscrizione incisa: "Una goccia basta."',
         clue: 'Il liquido fluorescente reagisce alla luce ultravioletta. La parola chiave è LUCE.'
     },
@@ -32,7 +30,7 @@ const OBJECTS = [
         icon: '📖',
         name: 'Il Grimorio dei Segreti',
         mask: 'Imported_Image-3.png',
-        bbox: [387, 508, 627, 601],
+        bbox: [385, 503, 629, 601],
         story: 'Il grimorio è aperto su una pagina coperta di simboli che sembrano muoversi sotto la luce tremolante. Contiene centinaia di ricette alchemiche trascritte in latino medievale. Le pagine in pergamena di vitello sono state scritte con inchiostro ferro-gallico. Una parola è sottolineata tre volte: ATTENZIONE.',
         clue: 'A pagina 42 si legge: "Aurum potabile" — l\'oro potabile era considerato l\'elisir della vita eterna.'
     },
@@ -41,7 +39,7 @@ const OBJECTS = [
         icon: '🔍',
         name: 'La Lente d\'Ingrandimento',
         mask: 'Imported_Image-4.png',
-        bbox: [666, 618, 720, 654],
+        bbox: [665, 616, 721, 655],
         story: 'Attraverso questa lente convergente, i simboli sul tavolo appaiono completamente diversi. Qualcosa che non dovrebbe essere visibile a occhio nudo si rivela sotto l\'ingrandimento. Le lenti furono perfezionate nel XIII secolo dai monaci benedettini.',
         clue: 'La lente rivela ciò che è nascosto. Come la scienza, mostra ciò che l\'occhio non vede.'
     },
@@ -50,7 +48,7 @@ const OBJECTS = [
         icon: '📄',
         name: 'Le Formule Segrete',
         mask: 'Imported_Image-5.png',
-        bbox: [210, 185, 265, 260],
+        bbox: [222, 197, 260, 241],
         story: 'Un foglio ingiallito coperto di formule chimiche e diagrammi alchemici. L\'inchiostro è ancora fresco — qualcuno era qui poco fa. Si riconoscono simboli alchemici per zolfo, mercurio e sale: i tre principi di Paracelso.',
         clue: 'Zolfo (🜍), Mercurio (☿), Sale (🜔) — i tre principi di Paracelso. La materia si TRASFORMA.'
     },
@@ -59,7 +57,7 @@ const OBJECTS = [
         icon: '🧪',
         name: 'L\'Ampolla Verde',
         mask: 'Imported_Image-6.png',
-        bbox: [339, 423, 384, 501],
+        bbox: [336, 415, 387, 507],
         story: 'Un\'ampolla dal liquido verde brillante che pulsa debolmente, come se respirasse. Il colore proviene dal solfato di rame disciolto. Non toccarla — Paracelso diceva: "Solo la dose fa il veleno." (Dosis sola facit venenum)',
         clue: '"Solo la dose fa il veleno" — questa massima vale per ogni sostanza. Anche l\'acqua può essere letale in dosi eccessive!'
     },
@@ -68,7 +66,7 @@ const OBJECTS = [
         icon: '🧺',
         name: 'Il Cesto delle Erbe',
         mask: 'Imported_Image-7.png',
-        bbox: [227, 550, 297, 628],
+        bbox: [224, 548, 298, 631],
         story: 'Un cesto di vimini intrecciato contiene erbe essiccate dal profumo insolito. Si riconoscono artemisia, verbena e un\'erba sconosciuta dalle foglie blu. Gli alchimisti medievali consideravano le erbe fondamentali per i loro preparati — la farmacologia moderna ne ha confermato molte proprietà.',
         clue: 'Le erbe nascondono principi attivi. La chimica delle piante è la base della medicina moderna: la TRASFORMAZIONE dalla natura alla cura.'
     }
@@ -87,9 +85,8 @@ const FINAL_MESSAGE = `
 
 // ─── STATE ─────────────────────────────────────────────
 let discoveredObjects = new Set();
-let gameStarted = false;
 
-// ─── DOM ELEMENTS ──────────────────────────────────────
+// ─── DOM ───────────────────────────────────────────────
 const introScreen = document.getElementById('intro-screen');
 const startBtn = document.getElementById('start-btn');
 const scene = document.getElementById('scene');
@@ -113,7 +110,6 @@ const finalMessage = document.getElementById('final-message');
 const celebrationClose = document.getElementById('celebration-close');
 const particleCanvas = document.getElementById('particle-canvas');
 
-// ─── OBJECT LAYER REFERENCES ──────────────────────────
 const objectLayers = {};
 
 // ─── INIT ──────────────────────────────────────────────
@@ -127,55 +123,54 @@ function init() {
     updateJournal();
 }
 
-// ─── LOAD / SAVE STATE ─────────────────────────────────
+// ─── STATE ─────────────────────────────────────────────
 function loadState() {
     try {
         const saved = localStorage.getItem('lab_discovered');
-        if (saved) {
-            discoveredObjects = new Set(JSON.parse(saved));
-        }
-    } catch (e) {
-        discoveredObjects = new Set();
-    }
+        if (saved) discoveredObjects = new Set(JSON.parse(saved));
+    } catch (e) { discoveredObjects = new Set(); }
 }
 
 function saveState() {
-    try {
-        localStorage.setItem('lab_discovered', JSON.stringify([...discoveredObjects]));
-    } catch (e) { /* silent fail */ }
+    try { localStorage.setItem('lab_discovered', JSON.stringify([...discoveredObjects])); }
+    catch (e) { }
 }
 
-// ─── BUILD SCENE ──────────────────────────────────────
+// ─── BUILD SCENE ───────────────────────────────────────
 function buildScene() {
     OBJECTS.forEach(obj => {
         const maskUrl = obj.mask;
 
+        // Far glow
         const glowFar = document.createElement('div');
         glowFar.className = 'hotspot-glow-far';
         glowFar.style.webkitMaskImage = `url(${maskUrl})`;
         glowFar.style.maskImage = `url(${maskUrl})`;
         maskLayer.appendChild(glowFar);
 
+        // Near glow
         const glowNear = document.createElement('div');
         glowNear.className = 'hotspot-glow-near';
         glowNear.style.webkitMaskImage = `url(${maskUrl})`;
         glowNear.style.maskImage = `url(${maskUrl})`;
         maskLayer.appendChild(glowNear);
 
+        // Overlay
         const overlay = document.createElement('div');
         overlay.className = 'hotspot-overlay';
         overlay.style.webkitMaskImage = `url(${maskUrl})`;
         overlay.style.maskImage = `url(${maskUrl})`;
         maskLayer.appendChild(overlay);
 
+        // Hotspot click area
         const [x1, y1, x2, y2] = obj.bbox;
         const hotspot = document.createElement('div');
         hotspot.className = 'hotspot';
         hotspot.dataset.id = obj.id;
-        hotspot.style.left = (x1 / SCENE_W * 100).toFixed(2) + '%';
-        hotspot.style.top = (y1 / SCENE_H * 100).toFixed(2) + '%';
-        hotspot.style.width = ((x2 - x1) / SCENE_W * 100).toFixed(2) + '%';
-        hotspot.style.height = ((y2 - y1) / SCENE_H * 100).toFixed(2) + '%';
+        hotspot.style.left = (x1 / SCENE_W * 100).toFixed(3) + '%';
+        hotspot.style.top = (y1 / SCENE_H * 100).toFixed(3) + '%';
+        hotspot.style.width = ((x2 - x1) / SCENE_W * 100).toFixed(3) + '%';
+        hotspot.style.height = ((y2 - y1) / SCENE_H * 100).toFixed(3) + '%';
         scene.appendChild(hotspot);
 
         objectLayers[obj.id] = { glowFar, glowNear, overlay, hotspot };
@@ -209,7 +204,7 @@ function buildScene() {
     });
 }
 
-// ─── BUILD PROGRESS BAR ───────────────────────────────
+// ─── PROGRESS BAR ──────────────────────────────────────
 function buildProgressBar() {
     progressItems.innerHTML = '';
     OBJECTS.forEach(obj => {
@@ -218,52 +213,41 @@ function buildProgressBar() {
         item.id = `prog-${obj.id}`;
         item.textContent = obj.icon;
         item.title = obj.name;
-        if (discoveredObjects.has(obj.id)) {
-            item.classList.add('found');
-        }
+        if (discoveredObjects.has(obj.id)) item.classList.add('found');
         progressItems.appendChild(item);
     });
 }
 
-// ─── EVENT LISTENERS ──────────────────────────────────
+// ─── EVENTS ────────────────────────────────────────────
 function attachEventListeners() {
     startBtn.addEventListener('click', startGame);
     modalClose.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) closeModal();
-    });
+    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeModal();
-            closeJournal();
-            removeHintTooltip();
-        }
+        if (e.key === 'Escape') { closeModal(); closeJournal(); removeHintTooltip(); }
     });
     hintBtn.addEventListener('click', showHint);
     resetBtn.addEventListener('click', resetGame);
     journalBtn.addEventListener('click', toggleJournal);
     journalClose.addEventListener('click', closeJournal);
-    journalPanel.addEventListener('click', (e) => {
-        if (e.target === journalPanel) closeJournal();
-    });
+    journalPanel.addEventListener('click', (e) => { if (e.target === journalPanel) closeJournal(); });
     celebrationClose.addEventListener('click', closeCelebration);
+
+    // Click su sfondo scena per deselezionare
     scene.addEventListener('click', (e) => {
-        if (e.target === scene || e.target.classList.contains('scene-bg') || e.target.id === 'vignette-overlay') {
+        const el = e.target;
+        if (el === scene || el.classList.contains('scene-bg') || el.id === 'vignette-overlay' || el.id === 'maskLayer') {
             clearActiveStates();
         }
     });
 }
 
-// ─── START GAME ───────────────────────────────────────
+// ─── GAME FLOW ─────────────────────────────────────────
 function startGame() {
-    gameStarted = true;
     introScreen.classList.add('fade-out');
-    setTimeout(() => {
-        introScreen.classList.add('hidden');
-    }, 1000);
+    setTimeout(() => introScreen.classList.add('hidden'), 1000);
 }
 
-// ─── OBJECT CLICK ─────────────────────────────────────
 function onObjectClick(objId, event) {
     const obj = OBJECTS.find(o => o.id === objId);
     if (!obj) return;
@@ -272,6 +256,7 @@ function onObjectClick(objId, event) {
 
     if (event) spawnClickParticles(event.clientX, event.clientY);
 
+    // Rimuovi hint text
     const clickHint = document.getElementById('click-hint');
     if (clickHint) {
         clickHint.style.transition = 'opacity 0.5s ease';
@@ -307,11 +292,11 @@ function onObjectClick(objId, event) {
     }
 }
 
-// ─── CLEAR ACTIVE / HOVER STATES ──────────────────────
 function clearActiveStates() {
     document.querySelectorAll('.hotspot-glow-far, .hotspot-glow-near, .hotspot-overlay').forEach(el => {
         el.classList.remove('active', 'hover');
     });
+    // Riapplica discovered
     OBJECTS.forEach(obj => {
         if (discoveredObjects.has(obj.id)) {
             const layers = objectLayers[obj.id];
@@ -324,7 +309,7 @@ function clearActiveStates() {
     });
 }
 
-// ─── TYPEWRITER ───────────────────────────────────────
+// ─── TYPEWRITER ────────────────────────────────────────
 let typewriterInterval = null;
 
 function typeWriter(text, element, speed = 25) {
@@ -333,8 +318,7 @@ function typeWriter(text, element, speed = 25) {
     let i = 0;
     function type() {
         if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
+            element.textContent += text.charAt(i++);
             typewriterInterval = setTimeout(type, speed);
         }
     }
@@ -342,13 +326,10 @@ function typeWriter(text, element, speed = 25) {
 }
 
 function stopTypewriter() {
-    if (typewriterInterval) {
-        clearTimeout(typewriterInterval);
-        typewriterInterval = null;
-    }
+    if (typewriterInterval) { clearTimeout(typewriterInterval); typewriterInterval = null; }
 }
 
-// ─── MODAL ────────────────────────────────────────────
+// ─── MODAL ─────────────────────────────────────────────
 function openModal(obj, isNew) {
     modalIcon.textContent = obj.icon;
     modalTitle.textContent = obj.name;
@@ -365,7 +346,6 @@ function openModal(obj, isNew) {
         badge.innerHTML = '<span>📌 Già Scoperto</span>';
         badge.style.color = 'var(--text-secondary)';
     }
-
     modalOverlay.classList.remove('hidden');
 }
 
@@ -375,26 +355,18 @@ function closeModal() {
     clearActiveStates();
 }
 
-// ─── UPDATE PROGRESS ──────────────────────────────────
+// ─── PROGRESS ──────────────────────────────────────────
 function updateProgress() {
-    const count = discoveredObjects.size;
-    const total = OBJECTS.length;
-    progressText.textContent = `${count} / ${total} segreti scoperti`;
+    progressText.textContent = `${discoveredObjects.size} / ${OBJECTS.length} segreti scoperti`;
     OBJECTS.forEach(obj => {
-        const progItem = document.getElementById(`prog-${obj.id}`);
-        if (progItem && discoveredObjects.has(obj.id)) {
-            progItem.classList.add('found');
-        }
+        const item = document.getElementById(`prog-${obj.id}`);
+        if (item && discoveredObjects.has(obj.id)) item.classList.add('found');
     });
 }
 
-// ─── JOURNAL ──────────────────────────────────────────
+// ─── JOURNAL ───────────────────────────────────────────
 function toggleJournal() {
-    if (journalPanel.classList.contains('hidden')) {
-        openJournal();
-    } else {
-        closeJournal();
-    }
+    journalPanel.classList.contains('hidden') ? openJournal() : closeJournal();
 }
 
 function openJournal() {
@@ -403,15 +375,13 @@ function openJournal() {
     journalPanel.classList.remove('hidden');
 }
 
-function closeJournal() {
-    journalPanel.classList.add('hidden');
-}
+function closeJournal() { journalPanel.classList.add('hidden'); }
 
 function updateJournal() {
     journalEntries.innerHTML = '';
     OBJECTS.forEach(obj => {
-        const entry = document.createElement('div');
         const isFound = discoveredObjects.has(obj.id);
+        const entry = document.createElement('div');
         entry.className = `journal-entry ${isFound ? 'unlocked' : 'locked'}`;
 
         const header = document.createElement('div');
@@ -438,14 +408,12 @@ function updateJournal() {
     });
 }
 
-// ─── HINT SYSTEM ──────────────────────────────────────
+// ─── HINT ──────────────────────────────────────────────
 function showHint() {
     removeHintTooltip();
     const undiscovered = OBJECTS.filter(o => !discoveredObjects.has(o.id));
-    if (undiscovered.length === 0) {
-        showTooltip('🎉 Hai già scoperto tutti gli oggetti!');
-        return;
-    }
+    if (undiscovered.length === 0) { showTooltip('🎉 Hai già scoperto tutti gli oggetti!'); return; }
+
     const target = undiscovered[Math.floor(Math.random() * undiscovered.length)];
     const layers = objectLayers[target.id];
     if (layers) {
@@ -479,7 +447,7 @@ function removeHintTooltip() {
     if (existing) existing.remove();
 }
 
-// ─── RESET GAME ───────────────────────────────────────
+// ─── RESET ─────────────────────────────────────────────
 function resetGame() {
     if (!confirm('Vuoi ricominciare? Tutti i progressi saranno persi.')) return;
     discoveredObjects.clear();
@@ -493,7 +461,7 @@ function resetGame() {
     updateJournal();
 }
 
-// ─── CELEBRATION ──────────────────────────────────────
+// ─── CELEBRATION ───────────────────────────────────────
 function showCelebration() {
     closeModal();
     finalMessage.innerHTML = FINAL_MESSAGE;
@@ -501,41 +469,32 @@ function showCelebration() {
     launchConfetti();
 }
 
-function closeCelebration() {
-    celebrationOverlay.classList.add('hidden');
-}
+function closeCelebration() { celebrationOverlay.classList.add('hidden'); }
 
-// ─── CONFETTI ─────────────────────────────────────────
 function launchConfetti() {
     const canvas = document.getElementById('confetti-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const confetti = [];
     const colors = ['#d4a844', '#f0d080', '#7744aa', '#4488cc', '#44aa66', '#ff6644', '#ff44aa'];
-
-    for (let i = 0; i < 150; i++) {
-        confetti.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height - canvas.height,
-            w: Math.random() * 10 + 5,
-            h: Math.random() * 6 + 3,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            speed: Math.random() * 3 + 2,
-            angle: Math.random() * Math.PI * 2,
-            spin: (Math.random() - 0.5) * 0.2,
-            drift: (Math.random() - 0.5) * 2
-        });
-    }
+    const confetti = Array.from({ length: 150 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 10 + 5,
+        h: Math.random() * 6 + 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        speed: Math.random() * 3 + 2,
+        angle: Math.random() * Math.PI * 2,
+        spin: (Math.random() - 0.5) * 0.2,
+        drift: (Math.random() - 0.5) * 2
+    }));
 
     let frame = 0;
     function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         confetti.forEach(c => {
-            c.y += c.speed;
-            c.x += c.drift;
-            c.angle += c.spin;
+            c.y += c.speed; c.x += c.drift; c.angle += c.spin;
             ctx.save();
             ctx.translate(c.x, c.y);
             ctx.rotate(c.angle);
@@ -544,87 +503,79 @@ function launchConfetti() {
             ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
             ctx.restore();
         });
-        frame++;
-        if (frame < 300 && !celebrationOverlay.classList.contains('hidden')) {
-            requestAnimationFrame(animate);
-        }
+        if (++frame < 300 && !celebrationOverlay.classList.contains('hidden')) requestAnimationFrame(animate);
     }
     animate();
 }
 
-// ─── CLICK PARTICLES ──────────────────────────────────
+// ─── CLICK PARTICLES ───────────────────────────────────
 function spawnClickParticles(x, y) {
     for (let i = 0; i < 10; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'click-particle';
-        const dx = (Math.random() - 0.5) * 80;
-        particle.style.setProperty('--dx', `${dx}px`);
-        const dy = (Math.random() - 0.5) * 20;
-        particle.style.left = `${x}px`;
-        particle.style.top = `${y + dy}px`;
-        particle.style.animationDelay = `${Math.random() * 0.2}s`;
-        document.body.appendChild(particle);
-        setTimeout(() => particle.remove(), 1100);
+        const p = document.createElement('div');
+        p.className = 'click-particle';
+        p.style.setProperty('--dx', `${(Math.random() - 0.5) * 80}px`);
+        p.style.left = `${x + (Math.random() - 0.5) * 14}px`;
+        p.style.top = `${y + (Math.random() - 0.5) * 14}px`;
+        p.style.animationDelay = `${Math.random() * 0.2}s`;
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1100);
     }
 }
 
-// ─── AMBIENT PARTICLES ────────────────────────────────
+// ─── AMBIENT PARTICLES ─────────────────────────────────
 function initParticles() {
     const ctx = particleCanvas.getContext('2d');
-    let particles = [];
 
     function resize() {
-        particleCanvas.width = window.innerWidth;
-        particleCanvas.height = window.innerHeight;
+        particleCanvas.width = particleCanvas.offsetWidth;
+        particleCanvas.height = particleCanvas.offsetHeight;
     }
     resize();
     window.addEventListener('resize', resize);
 
-    for (let i = 0; i < 40; i++) {
-        particles.push({
-            x: Math.random() * particleCanvas.width,
-            y: Math.random() * particleCanvas.height,
-            size: Math.random() * 2 + 0.5,
-            speedY: -(Math.random() * 0.4 + 0.08),
-            speedX: (Math.random() - 0.5) * 0.25,
-            opacity: Math.random() * 0.4 + 0.08,
-            flickerSpeed: Math.random() * 0.02 + 0.005,
-            flickerOffset: Math.random() * Math.PI * 2
-        });
-    }
+    const particles = Array.from({ length: 40 }, () => ({
+        x: Math.random() * particleCanvas.width,
+        y: Math.random() * particleCanvas.height,
+        size: Math.random() * 2 + 0.5,
+        speedY: -(Math.random() * 0.4 + 0.08),
+        speedX: (Math.random() - 0.5) * 0.25,
+        opacity: Math.random() * 0.4 + 0.08,
+        flickerSpeed: Math.random() * 0.02 + 0.005,
+        flickerOffset: Math.random() * Math.PI * 2
+    }));
 
-    function animateParticles() {
+    function animate() {
         ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
         particles.forEach(p => {
-            p.y += p.speedY;
-            p.x += p.speedX;
+            p.y += p.speedY; p.x += p.speedX;
             const flicker = Math.sin(Date.now() * p.flickerSpeed + p.flickerOffset) * 0.3 + 0.7;
             if (p.y < -10) p.y = particleCanvas.height + 10;
             if (p.x < -10) p.x = particleCanvas.width + 10;
             if (p.x > particleCanvas.width + 10) p.x = -10;
+
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(212, 168, 68, ${p.opacity * flicker})`;
+            ctx.fillStyle = `rgba(212,168,68,${p.opacity * flicker})`;
             ctx.fill();
+
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(212, 168, 68, ${p.opacity * flicker * 0.12})`;
+            ctx.fillStyle = `rgba(212,168,68,${p.opacity * flicker * 0.12})`;
             ctx.fill();
         });
-        requestAnimationFrame(animateParticles);
+        requestAnimationFrame(animate);
     }
-    animateParticles();
+    animate();
 }
 
-// ─── CLICK SOUND ──────────────────────────────────────
+// ─── CLICK SOUND ───────────────────────────────────────
 function playClickSound() {
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         const osc1 = audioCtx.createOscillator();
         const gain1 = audioCtx.createGain();
-        osc1.connect(gain1);
-        gain1.connect(audioCtx.destination);
+        osc1.connect(gain1); gain1.connect(audioCtx.destination);
         osc1.type = 'sine';
         osc1.frequency.setValueAtTime(800, audioCtx.currentTime);
         osc1.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
@@ -636,8 +587,7 @@ function playClickSound() {
 
         const osc2 = audioCtx.createOscillator();
         const gain2 = audioCtx.createGain();
-        osc2.connect(gain2);
-        gain2.connect(audioCtx.destination);
+        osc2.connect(gain2); gain2.connect(audioCtx.destination);
         osc2.type = 'triangle';
         osc2.frequency.setValueAtTime(1200, audioCtx.currentTime + 0.05);
         osc2.frequency.exponentialRampToValueAtTime(1600, audioCtx.currentTime + 0.15);
@@ -646,10 +596,8 @@ function playClickSound() {
         gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
         osc2.start(audioCtx.currentTime + 0.05);
         osc2.stop(audioCtx.currentTime + 0.5);
-    } catch (e) {
-        // Audio not supported
-    }
+    } catch (e) { }
 }
 
-// ─── INITIALIZE ───────────────────────────────────────
+// ─── START ─────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', init);

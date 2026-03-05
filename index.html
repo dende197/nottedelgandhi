@@ -84,9 +84,8 @@
                 radial-gradient(2px 2px at 40% 70%, rgba(212, 168, 68, 0.3), transparent),
                 radial-gradient(2px 2px at 60% 20%, rgba(100, 140, 255, 0.3), transparent),
                 radial-gradient(2px 2px at 80% 50%, rgba(212, 168, 68, 0.2), transparent),
-                radial-gradient(1px 1px at 10% 80%, rgba(255, 255, 255, 0.2), transparent),
                 radial-gradient(2px 2px at 50% 50%, rgba(119, 68, 170, 0.3), transparent);
-            background-size: 300px 300px, 400px 400px, 350px 350px, 250px 250px, 200px 200px, 320px 320px;
+            background-size: 300px 300px, 400px 400px, 350px 350px, 250px 250px, 320px 320px;
             animation: particleDrift 20s linear infinite;
         }
 
@@ -206,7 +205,7 @@
             }
         }
 
-        /* ── SCENE — aspect ratio fisso, questo è il fix chiave ── */
+        /* ── SCENE ── */
         #scene-container {
             position: absolute;
             inset: 0;
@@ -243,45 +242,93 @@
             z-index: 10;
         }
 
+        /* ── MASK LAYER ── */
         .mask-layer {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            z-index: 2;
             pointer-events: none;
         }
 
-        /* ── GLOW SYSTEM (single layer, drop-shadow) ── */
-        .hotspot-glow {
+        /*
+         * ═══════════════════════════════════════════════════════
+         * GLOW SYSTEM — come funziona davvero
+         * ═══════════════════════════════════════════════════════
+         *
+         * .hotspot-glow-wrap  → wrapper senza maschera, riceve il
+         *                        filter:drop-shadow che "esce" fuori
+         *
+         * .hotspot-glow-inner → figlio con mask-image e background
+         *                        colorato: la maschera ritaglia la
+         *                        sagoma, i pixel colorati esistono,
+         *                        drop-shadow sul padre li illumina
+         *                        proiettando luce oltre il bordo.
+         *
+         * opacity sul wrapper → quasi zero = non si vede il "fill"
+         *                        ma il drop-shadow esterno sì
+         * ═══════════════════════════════════════════════════════
+         */
+        .hotspot-glow-wrap {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
-            opacity: 0;
             pointer-events: none;
-            transition: opacity .18s ease;
+            opacity: 0;
+            transition: opacity 0.22s ease;
+            /* drop-shadow sul wrapper: viene proiettato FUORI dalla sagoma */
+            filter:
+                drop-shadow(0 0 8px rgba(255, 210, 80, 1.0)) drop-shadow(0 0 18px rgba(255, 185, 50, 0.85)) drop-shadow(0 0 32px rgba(255, 160, 30, 0.65)) drop-shadow(0 0 48px rgba(255, 140, 10, 0.40));
+        }
+
+        .hotspot-glow-inner {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            /* colore dorato: i pixel esistono → drop-shadow funziona */
+            background: rgba(255, 220, 100, 0.08);
             -webkit-mask-size: 100% 100%;
             mask-size: 100% 100%;
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
-            will-change: opacity;
-            background: transparent;
-            filter:
-                drop-shadow(0 0 10px rgba(255, 210, 90, 0.85)) drop-shadow(0 0 22px rgba(255, 190, 60, 0.60)) drop-shadow(0 0 36px rgba(255, 170, 40, 0.40));
         }
 
-        .hotspot-glow.hover,
-        .hotspot-glow.active {
+        /* Hover: glow visibile ma delicato */
+        .hotspot-glow-wrap.hover {
+            opacity: 0.75;
+        }
+
+        /* Active/click: glow pieno + pulse */
+        .hotspot-glow-wrap.active {
             opacity: 1;
+            animation: glowPulse 1.6s ease-in-out infinite;
         }
 
-        .hotspot-glow.discovered {
-            opacity: .25;
+        @keyframes glowPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                filter: drop-shadow(0 0 8px rgba(255, 210, 80, 1.0)) drop-shadow(0 0 18px rgba(255, 185, 50, 0.85)) drop-shadow(0 0 32px rgba(255, 160, 30, 0.65)) drop-shadow(0 0 48px rgba(255, 140, 10, 0.40));
+            }
+
+            50% {
+                opacity: 1;
+                filter: drop-shadow(0 0 12px rgba(255, 220, 100, 1.0)) drop-shadow(0 0 28px rgba(255, 200, 70, 0.90)) drop-shadow(0 0 50px rgba(255, 175, 40, 0.75)) drop-shadow(0 0 70px rgba(255, 150, 20, 0.50));
+            }
+        }
+
+        /* Discovered: verde tenue */
+        .hotspot-glow-wrap.discovered {
+            opacity: 0.45;
             filter:
-                drop-shadow(0 0 8px rgba(110, 255, 180, 0.45)) drop-shadow(0 0 18px rgba(110, 255, 180, 0.28));
+                drop-shadow(0 0 6px rgba(100, 255, 180, 0.80)) drop-shadow(0 0 16px rgba(80, 220, 160, 0.55)) drop-shadow(0 0 28px rgba(60, 190, 130, 0.35));
         }
 
+        /* ── HOTSPOT ── */
         .hotspot {
             position: absolute;
             cursor: pointer;
@@ -312,6 +359,7 @@
             }
         }
 
+        /* ── PARTICLES ── */
         #particle-canvas {
             position: absolute;
             inset: 0;
@@ -785,7 +833,7 @@
             color: var(--text-secondary);
         }
 
-        /* ── HINT TOOLTIP ── */
+        /* ── TOOLTIP ── */
         .hint-tooltip {
             position: fixed;
             top: 76px;
@@ -1028,42 +1076,42 @@
             },
             {
                 id: 'libro', icon: '📖', name: 'Il Grimorio dei Segreti', mask: 'Imported_Image-3.png', bbox: [385, 503, 629, 601],
-                story: "Il grimorio è aperto su una pagina coperta di simboli che sembrano muoversi sotto la luce tremolante. Contiene centinaia di ricette alchemiche trascritte in latino medievale. Le pagine in pergamena di vitello sono state scritte con inchiostro ferro-gallico. Una parola è sottolineata tre volte: ATTENZIONE.",
+                story: "Il grimorio è aperto su una pagina coperta di simboli che sembrano muoversi sotto la luce tremolante. Contiene centinaia di ricette alchemiche trascritte in latino medievale. Una parola è sottolineata tre volte: ATTENZIONE.",
                 clue: 'A pagina 42 si legge: "Aurum potabile" — l\'oro potabile era considerato l\'elisir della vita eterna.'
             },
             {
                 id: 'lente', icon: '🔍', name: "La Lente d'Ingrandimento", mask: 'Imported_Image-4.png', bbox: [665, 616, 721, 655],
-                story: 'Attraverso questa lente convergente, i simboli sul tavolo appaiono completamente diversi. Qualcosa che non dovrebbe essere visibile a occhio nudo si rivela sotto l\'ingrandimento. Le lenti furono perfezionate nel XIII secolo dai monaci benedettini.',
+                story: "Attraverso questa lente convergente, i simboli sul tavolo appaiono completamente diversi. Le lenti furono perfezionate nel XIII secolo dai monaci benedettini.",
                 clue: "La lente rivela ciò che è nascosto. Come la scienza, mostra ciò che l'occhio non vede."
             },
             {
                 id: 'foglio', icon: '📄', name: 'Le Formule Segrete', mask: 'Imported_Image-5.png', bbox: [222, 197, 260, 241],
-                story: "Un foglio ingiallito coperto di formule chimiche e diagrammi alchemici. L'inchiostro è ancora fresco — qualcuno era qui poco fa. Si riconoscono simboli alchemici per zolfo, mercurio e sale: i tre principi di Paracelso.",
+                story: "Un foglio ingiallito coperto di formule chimiche e diagrammi alchemici. L'inchiostro è ancora fresco — qualcuno era qui poco fa. Si riconoscono simboli alchemici per zolfo, mercurio e sale.",
                 clue: 'Zolfo (🜍), Mercurio (☿), Sale (🜔) — i tre principi di Paracelso. La materia si TRASFORMA.'
             },
             {
                 id: 'ampolla-verde', icon: '🧪', name: "L'Ampolla Verde", mask: 'Imported_Image-6.png', bbox: [336, 415, 387, 507],
-                story: "Un'ampolla dal liquido verde brillante che pulsa debolmente, come se respirasse. Il colore proviene dal solfato di rame disciolto. Non toccarla — Paracelso diceva: \"Solo la dose fa il veleno.\" (Dosis sola facit venenum)",
-                clue: '"Solo la dose fa il veleno" — questa massima vale per ogni sostanza. Anche l\'acqua può essere letale in dosi eccessive!'
+                story: "Un'ampolla dal liquido verde brillante che pulsa debolmente. Il colore proviene dal solfato di rame disciolto. Paracelso diceva: \"Solo la dose fa il veleno.\"",
+                clue: '"Solo la dose fa il veleno" — vale per ogni sostanza. Anche l\'acqua può essere letale in dosi eccessive!'
             },
             {
                 id: 'cesto', icon: '🧺', name: 'Il Cesto delle Erbe', mask: 'Imported_Image-7.png', bbox: [224, 548, 298, 631],
-                story: "Un cesto di vimini intrecciato contiene erbe essiccate dal profumo insolito. Si riconoscono artemisia, verbena e un'erba sconosciuta dalle foglie blu. Gli alchimisti medievali consideravano le erbe fondamentali per i loro preparati — la farmacologia moderna ne ha confermato molte proprietà.",
-                clue: 'Le erbe nascondono principi attivi. La chimica delle piante è la base della medicina moderna: la TRASFORMAZIONE dalla natura alla cura.'
+                story: "Un cesto di vimini intrecciato contiene erbe essiccate dal profumo insolito. Si riconoscono artemisia, verbena e un'erba sconosciuta dalle foglie blu.",
+                clue: 'Le erbe nascondono principi attivi. La chimica delle piante è la base della medicina moderna.'
             }
         ];
 
         const FINAL_MESSAGE = `
-        <p><strong>🧬 Il Segreto del Laboratorio</strong></p>
-        <p>Hai scoperto il filo conduttore che lega ogni oggetto: la <strong>TRASFORMAZIONE</strong>.</p>
-        <p>Dall'alchimia alla chimica moderna, tutto ruota attorno a un unico principio: comprendere come la materia si trasforma.</p>
-        <p>Gli alchimisti cercavano la Pietra Filosofale, ma il vero tesoro era il <strong>metodo scientifico</strong> — l'arte di osservare, sperimentare e scoprire.</p>
-        <p style="margin-top:16px;font-size:1.15rem;">✨ <em>"Nulla si crea, nulla si distrugge, tutto si trasforma."</em><br>— Antoine Lavoisier</p>
-    `;
+    <p><strong>🧬 Il Segreto del Laboratorio</strong></p>
+    <p>Hai scoperto il filo conduttore: la <strong>TRASFORMAZIONE</strong>.</p>
+    <p>Dall'alchimia alla chimica moderna, tutto ruota attorno al comprendere come la materia si trasforma.</p>
+    <p style="margin-top:16px;font-size:1.15rem;">✨ <em>"Nulla si crea, nulla si distrugge, tutto si trasforma."</em><br>— Antoine Lavoisier</p>
+`;
 
         let discoveredObjects = new Set();
         const objectLayers = {};
 
+        // DOM refs
         const introScreen = document.getElementById('intro-screen');
         const scene = document.getElementById('scene');
         const maskLayer = document.getElementById('maskLayer');
@@ -1077,10 +1125,11 @@
         const journalBtn = document.getElementById('journal-btn');
         const journalPanel = document.getElementById('journal-panel');
         const journalEntries = document.getElementById('journal-entries');
-        const celebrationOverlay = document.getElementById('celebration-overlay');
+        const celebOverlay = document.getElementById('celebration-overlay');
         const finalMessage = document.getElementById('final-message');
         const particleCanvas = document.getElementById('particle-canvas');
 
+        /* ── INIT ── */
         function init() {
             try { const s = localStorage.getItem('lab_discovered'); if (s) discoveredObjects = new Set(JSON.parse(s)); } catch (e) { }
             buildScene();
@@ -1095,14 +1144,32 @@
             try { localStorage.setItem('lab_discovered', JSON.stringify([...discoveredObjects])); } catch (e) { }
         }
 
+        /* ── BUILD SCENE ── */
         function buildScene() {
             OBJECTS.forEach(obj => {
-                const glow = document.createElement('div');
-                glow.className = 'hotspot-glow';
-                glow.style.webkitMaskImage = `url(${obj.mask})`;
-                glow.style.maskImage = `url(${obj.mask})`;
-                maskLayer.appendChild(glow);
+                /*
+                 * STRUTTURA:
+                 *  maskLayer
+                 *    └─ .hotspot-glow-wrap   ← opacity + filter:drop-shadow qui
+                 *         └─ .hotspot-glow-inner  ← mask-image + background colorato
+                 *
+                 * Il drop-shadow viene applicato sul WRAPPER (nessuna maschera),
+                 * quindi il blur si propaga liberamente fuori dalla sagoma.
+                 * L'inner ha la maschera che ritaglia la forma e un background
+                 * leggermente visibile che "alimenta" il drop-shadow.
+                 */
+                const wrap = document.createElement('div');
+                wrap.className = 'hotspot-glow-wrap';
 
+                const inner = document.createElement('div');
+                inner.className = 'hotspot-glow-inner';
+                inner.style.webkitMaskImage = `url(${obj.mask})`;
+                inner.style.maskImage = `url(${obj.mask})`;
+
+                wrap.appendChild(inner);
+                maskLayer.appendChild(wrap);
+
+                /* Hotspot invisibile per i click */
                 const [x1, y1, x2, y2] = obj.bbox;
                 const hotspot = document.createElement('div');
                 hotspot.className = 'hotspot';
@@ -1113,26 +1180,27 @@
                 hotspot.style.height = ((y2 - y1) / SCENE_H * 100).toFixed(3) + '%';
                 scene.appendChild(hotspot);
 
-                objectLayers[obj.id] = { glow, hotspot };
+                objectLayers[obj.id] = { wrap, inner, hotspot };
 
+                /* Hover */
                 hotspot.addEventListener('mouseenter', () => {
-                    if (!glow.classList.contains('active') && !glow.classList.contains('discovered')) {
-                        glow.classList.add('hover');
-                    }
+                    if (!wrap.classList.contains('active') && !wrap.classList.contains('discovered'))
+                        wrap.classList.add('hover');
                 });
                 hotspot.addEventListener('mouseleave', () => {
-                    if (!glow.classList.contains('active')) {
-                        glow.classList.remove('hover');
-                    }
+                    if (!wrap.classList.contains('active'))
+                        wrap.classList.remove('hover');
                 });
-                hotspot.addEventListener('click', (e) => { e.stopPropagation(); onObjectClick(obj.id, e); });
 
-                if (discoveredObjects.has(obj.id)) {
-                    glow.classList.add('discovered');
-                }
+                /* Click */
+                hotspot.addEventListener('click', e => { e.stopPropagation(); onObjectClick(obj.id, e); });
+
+                /* Stato già scoperto */
+                if (discoveredObjects.has(obj.id)) wrap.classList.add('discovered');
             });
         }
 
+        /* ── PROGRESS BAR ── */
         function buildProgressBar() {
             progressItems.innerHTML = '';
             OBJECTS.forEach(obj => {
@@ -1144,38 +1212,39 @@
             });
         }
 
+        /* ── EVENTS ── */
         function attachEvents() {
             document.getElementById('start-btn').addEventListener('click', () => {
                 introScreen.classList.add('fade-out');
                 setTimeout(() => introScreen.classList.add('hidden'), 1000);
             });
             document.getElementById('modal-close').addEventListener('click', closeModal);
-            modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeModal(); closeJournal(); removeHintTooltip(); } });
+            modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeJournal(); removeHintTooltip(); } });
             document.getElementById('hint-btn').addEventListener('click', showHint);
             document.getElementById('reset-btn').addEventListener('click', resetGame);
             journalBtn.addEventListener('click', toggleJournal);
             document.getElementById('journal-close').addEventListener('click', closeJournal);
-            journalPanel.addEventListener('click', (e) => { if (e.target === journalPanel) closeJournal(); });
-            document.getElementById('celebration-close').addEventListener('click', () => celebrationOverlay.classList.add('hidden'));
-            scene.addEventListener('click', (e) => {
-                const el = e.target;
-                if (el === scene || el.classList.contains('scene-bg') || el.id === 'vignette-overlay' || el.id === 'maskLayer') clearActiveStates();
+            journalPanel.addEventListener('click', e => { if (e.target === journalPanel) closeJournal(); });
+            document.getElementById('celebration-close').addEventListener('click', () => celebOverlay.classList.add('hidden'));
+            scene.addEventListener('click', e => {
+                if (e.target === scene || e.target.classList.contains('scene-bg') ||
+                    e.target.id === 'vignette-overlay' || e.target.id === 'maskLayer') clearActiveStates();
             });
         }
 
+        /* ── OBJECT CLICK ── */
         function onObjectClick(objId, event) {
-            const obj = OBJECTS.find(o => o.id === objId);
-            if (!obj) return;
+            const obj = OBJECTS.find(o => o.id === objId); if (!obj) return;
             const layers = objectLayers[objId];
+
             if (event) spawnClickParticles(event.clientX, event.clientY);
 
             const hint = document.getElementById('click-hint');
             if (hint) { hint.style.transition = 'opacity 0.5s'; hint.style.opacity = '0'; setTimeout(() => hint.remove(), 500); }
 
             clearActiveStates();
-            layers.glow.classList.add('active');
-            playClickSound();
+            layers.wrap.classList.add('active');
 
             const isNew = !discoveredObjects.has(objId);
             discoveredObjects.add(objId); saveState();
@@ -1184,16 +1253,18 @@
             if (discoveredObjects.size === OBJECTS.length) setTimeout(showCelebration, 1500);
         }
 
+        /* ── CLEAR STATES ── */
         function clearActiveStates() {
-            document.querySelectorAll('.hotspot-glow').forEach(el => el.classList.remove('active', 'hover'));
+            document.querySelectorAll('.hotspot-glow-wrap').forEach(el => el.classList.remove('active', 'hover'));
             OBJECTS.forEach(obj => {
                 if (discoveredObjects.has(obj.id)) {
                     const l = objectLayers[obj.id];
-                    if (l) l.glow.classList.add('discovered');
+                    if (l) l.wrap.classList.add('discovered');
                 }
             });
         }
 
+        /* ── TYPEWRITER ── */
         let twInterval = null;
         function typeWriter(text, el, speed = 25) {
             if (twInterval) { clearTimeout(twInterval); twInterval = null; }
@@ -1202,6 +1273,7 @@
             type();
         }
 
+        /* ── MODAL ── */
         function openModal(obj, isNew) {
             modalIcon.textContent = obj.icon; modalTitle.textContent = obj.name;
             typeWriter(obj.story, modalStory); modalClueText.textContent = obj.clue;
@@ -1211,21 +1283,21 @@
             badge.style.color = isNew ? '' : 'var(--text-secondary)';
             modalOverlay.classList.remove('hidden');
         }
-
         function closeModal() {
             if (twInterval) { clearTimeout(twInterval); twInterval = null; }
             modalOverlay.classList.add('hidden'); clearActiveStates();
         }
 
+        /* ── PROGRESS ── */
         function updateProgress() {
             progressText.textContent = `${discoveredObjects.size} / ${OBJECTS.length} segreti scoperti`;
-            OBJECTS.forEach(obj => { const item = document.getElementById(`prog-${obj.id}`); if (item && discoveredObjects.has(obj.id)) item.classList.add('found'); });
+            OBJECTS.forEach(obj => { const it = document.getElementById(`prog-${obj.id}`); if (it && discoveredObjects.has(obj.id)) it.classList.add('found'); });
         }
 
+        /* ── JOURNAL ── */
         function toggleJournal() { journalPanel.classList.contains('hidden') ? openJournal() : closeJournal(); }
         function openJournal() { journalBtn.classList.remove('has-new'); updateJournal(); journalPanel.classList.remove('hidden'); }
         function closeJournal() { journalPanel.classList.add('hidden'); }
-
         function updateJournal() {
             journalEntries.innerHTML = '';
             OBJECTS.forEach(obj => {
@@ -1233,16 +1305,16 @@
                 const entry = document.createElement('div');
                 entry.className = `journal-entry ${isFound ? 'unlocked' : 'locked'}`;
                 entry.innerHTML = `
-                <div class="journal-entry-header">
-                    <span class="journal-entry-icon">${isFound ? obj.icon : '🔒'}</span>
-                    <span class="journal-entry-name">${isFound ? obj.name : '???'}</span>
-                </div>
-                <div class="journal-entry-clue">${isFound ? obj.clue : 'Indizio non ancora scoperto...'}</div>
-            `;
+            <div class="journal-entry-header">
+                <span class="journal-entry-icon">${isFound ? obj.icon : '🔒'}</span>
+                <span class="journal-entry-name">${isFound ? obj.name : '???'}</span>
+            </div>
+            <div class="journal-entry-clue">${isFound ? obj.clue : 'Indizio non ancora scoperto...'}</div>`;
                 journalEntries.appendChild(entry);
             });
         }
 
+        /* ── HINT ── */
         function showHint() {
             removeHintTooltip();
             const undiscovered = OBJECTS.filter(o => !discoveredObjects.has(o.id));
@@ -1250,12 +1322,11 @@
             const target = undiscovered[Math.floor(Math.random() * undiscovered.length)];
             const l = objectLayers[target.id];
             if (l) {
-                l.glow.classList.add('hover'); l.hotspot.classList.add('hint-highlight');
-                setTimeout(() => { l.glow.classList.remove('hover'); l.hotspot.classList.remove('hint-highlight'); }, 3000);
+                l.wrap.classList.add('hover'); l.hotspot.classList.add('hint-highlight');
+                setTimeout(() => { l.wrap.classList.remove('hover'); l.hotspot.classList.remove('hint-highlight'); }, 3000);
             }
             showTooltip(`💡 Cerca ${target.icon} ${target.name}...`);
         }
-
         function showTooltip(text) {
             removeHintTooltip();
             const t = document.createElement('div'); t.className = 'hint-tooltip'; t.id = 'active-tooltip'; t.textContent = text;
@@ -1264,20 +1335,21 @@
         }
         function removeHintTooltip() { const e = document.getElementById('active-tooltip'); if (e) e.remove(); }
 
+        /* ── RESET ── */
         function resetGame() {
             if (!confirm('Vuoi ricominciare? Tutti i progressi saranno persi.')) return;
             discoveredObjects.clear(); localStorage.removeItem('lab_discovered');
-            document.querySelectorAll('.hotspot-glow').forEach(el => { el.classList.remove('active', 'hover', 'discovered'); });
+            document.querySelectorAll('.hotspot-glow-wrap').forEach(el => el.classList.remove('active', 'hover', 'discovered'));
             buildProgressBar(); updateProgress(); updateJournal();
         }
 
+        /* ── CELEBRATION ── */
         function showCelebration() {
             closeModal(); finalMessage.innerHTML = FINAL_MESSAGE;
-            celebrationOverlay.classList.remove('hidden'); launchConfetti();
+            celebOverlay.classList.remove('hidden'); launchConfetti();
         }
-
         function launchConfetti() {
-            const canvas = document.getElementById('confetti-canvas'); const ctx = canvas.getContext('2d');
+            const canvas = document.getElementById('confetti-canvas'), ctx = canvas.getContext('2d');
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             const colors = ['#d4a844', '#f0d080', '#7744aa', '#4488cc', '#44aa66', '#ff6644', '#ff44aa'];
             const confetti = Array.from({ length: 150 }, () => ({
@@ -1296,11 +1368,12 @@
                     ctx.fillStyle = c.color; ctx.globalAlpha = Math.max(0, 1 - (c.y / canvas.height) * 0.5);
                     ctx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h); ctx.restore();
                 });
-                if (++frame < 300 && !celebrationOverlay.classList.contains('hidden')) requestAnimationFrame(animate);
+                if (++frame < 300 && !celebOverlay.classList.contains('hidden')) requestAnimationFrame(animate);
             }
             animate();
         }
 
+        /* ── CLICK PARTICLES ── */
         function spawnClickParticles(x, y) {
             for (let i = 0; i < 10; i++) {
                 const p = document.createElement('div'); p.className = 'click-particle';
@@ -1311,6 +1384,7 @@
             }
         }
 
+        /* ── AMBIENT PARTICLES ── */
         function initParticles() {
             const ctx = particleCanvas.getContext('2d');
             function resize() { particleCanvas.width = particleCanvas.offsetWidth; particleCanvas.height = particleCanvas.offsetHeight; }
@@ -1336,20 +1410,6 @@
                 requestAnimationFrame(animate);
             }
             animate();
-        }
-
-        function playClickSound() {
-            try {
-                const ac = new (window.AudioContext || window.webkitAudioContext)();
-                const o1 = ac.createOscillator(), g1 = ac.createGain(); o1.connect(g1); g1.connect(ac.destination);
-                o1.type = 'sine'; o1.frequency.setValueAtTime(800, ac.currentTime); o1.frequency.exponentialRampToValueAtTime(1200, ac.currentTime + 0.1); o1.frequency.exponentialRampToValueAtTime(600, ac.currentTime + 0.3);
-                g1.gain.setValueAtTime(0.12, ac.currentTime); g1.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.5);
-                o1.start(ac.currentTime); o1.stop(ac.currentTime + 0.5);
-                const o2 = ac.createOscillator(), g2 = ac.createGain(); o2.connect(g2); g2.connect(ac.destination);
-                o2.type = 'triangle'; o2.frequency.setValueAtTime(1200, ac.currentTime + 0.05); o2.frequency.exponentialRampToValueAtTime(1600, ac.currentTime + 0.15); o2.frequency.exponentialRampToValueAtTime(900, ac.currentTime + 0.35);
-                g2.gain.setValueAtTime(0.06, ac.currentTime + 0.05); g2.gain.exponentialRampToValueAtTime(0.01, ac.currentTime + 0.5);
-                o2.start(ac.currentTime + 0.05); o2.stop(ac.currentTime + 0.5);
-            } catch (e) { }
         }
 
         document.addEventListener('DOMContentLoaded', init);

@@ -252,185 +252,34 @@
             pointer-events: none;
         }
 
-        /* ── GLOW SYSTEM ── */
-        .hotspot-glow-back {
+        /* ── GLOW SYSTEM (single layer, drop-shadow) ── */
+        .hotspot-glow {
             position: absolute;
             inset: 0;
             width: 100%;
             height: 100%;
             opacity: 0;
-            transition: opacity 0.5s ease;
             pointer-events: none;
-            background: rgba(255, 190, 50, 0.35);
+            transition: opacity .18s ease;
             -webkit-mask-size: 100% 100%;
             mask-size: 100% 100%;
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
-            filter: blur(32px);
-            mix-blend-mode: screen;
+            will-change: opacity;
+            background: transparent;
+            filter:
+                drop-shadow(0 0 10px rgba(255, 210, 90, 0.85)) drop-shadow(0 0 22px rgba(255, 190, 60, 0.60)) drop-shadow(0 0 36px rgba(255, 170, 40, 0.40));
         }
 
-        .hotspot-glow-far {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-            background: rgba(255, 200, 60, 0.5);
-            -webkit-mask-size: 100% 100%;
-            mask-size: 100% 100%;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            filter: blur(18px);
-            mix-blend-mode: screen;
+        .hotspot-glow.hover,
+        .hotspot-glow.active {
+            opacity: 1;
         }
 
-        .hotspot-glow-near {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-            background: rgba(255, 210, 80, 0.45);
-            -webkit-mask-size: 100% 100%;
-            mask-size: 100% 100%;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            filter: blur(8px);
-            mix-blend-mode: screen;
-        }
-
-        .hotspot-overlay {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-            background: rgba(255, 220, 100, 0.12);
-            -webkit-mask-size: 100% 100%;
-            mask-size: 100% 100%;
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            mix-blend-mode: screen;
-        }
-
-        .hotspot-glow-back.hover {
-            opacity: 0.45;
-        }
-
-        .hotspot-glow-far.hover {
-            opacity: 0.35;
-        }
-
-        .hotspot-glow-near.hover {
-            opacity: 0.4;
-        }
-
-        .hotspot-overlay.hover {
-            opacity: 0.4;
-        }
-
-        .hotspot-glow-back.active {
-            opacity: 0.6;
-            animation: pulseGlowBack 2s ease-in-out infinite;
-        }
-
-        .hotspot-glow-far.active {
-            opacity: 0.55;
-            animation: pulseGlowFar 2s ease-in-out infinite;
-        }
-
-        .hotspot-glow-near.active {
-            opacity: 0.55;
-            animation: pulseGlowNear 2s ease-in-out infinite;
-        }
-
-        .hotspot-overlay.active {
-            opacity: 0.5;
-            animation: pulseOverlay 2s ease-in-out infinite;
-        }
-
-        @keyframes pulseGlowBack {
-
-            0%,
-            100% {
-                opacity: 0.6;
-                filter: blur(32px);
-            }
-
-            50% {
-                opacity: 0.8;
-                filter: blur(40px);
-            }
-        }
-
-        @keyframes pulseGlowFar {
-
-            0%,
-            100% {
-                opacity: 0.55;
-                filter: blur(18px);
-            }
-
-            50% {
-                opacity: 0.75;
-                filter: blur(24px);
-            }
-        }
-
-        @keyframes pulseGlowNear {
-
-            0%,
-            100% {
-                opacity: 0.55;
-                filter: blur(8px);
-            }
-
-            50% {
-                opacity: 0.7;
-                filter: blur(12px);
-            }
-        }
-
-        @keyframes pulseOverlay {
-
-            0%,
-            100% {
-                opacity: 0.5;
-            }
-
-            50% {
-                opacity: 0.7;
-            }
-        }
-
-        .hotspot-glow-back.discovered {
-            opacity: 0.1;
-            background: rgba(68, 170, 102, 0.3);
-            filter: blur(28px);
-        }
-
-        .hotspot-glow-far.discovered {
-            opacity: 0.15;
-            background: rgba(68, 170, 102, 0.4);
-            filter: blur(14px);
-        }
-
-        .hotspot-glow-near.discovered {
-            opacity: 0.2;
-            background: rgba(68, 170, 102, 0.35);
-            filter: blur(6px);
-        }
-
-        .hotspot-overlay.discovered {
-            opacity: 0.1;
-            background: rgba(68, 170, 102, 0.15);
+        .hotspot-glow.discovered {
+            opacity: .25;
+            filter:
+                drop-shadow(0 0 8px rgba(110, 255, 180, 0.45)) drop-shadow(0 0 18px rgba(110, 255, 180, 0.28));
         }
 
         .hotspot {
@@ -1248,15 +1097,11 @@
 
         function buildScene() {
             OBJECTS.forEach(obj => {
-                const glowBack = document.createElement('div'); glowBack.className = 'hotspot-glow-back';
-                const glowFar = document.createElement('div'); glowFar.className = 'hotspot-glow-far';
-                const glowNear = document.createElement('div'); glowNear.className = 'hotspot-glow-near';
-                const overlay = document.createElement('div'); overlay.className = 'hotspot-overlay';
-                [glowBack, glowFar, glowNear, overlay].forEach(el => {
-                    el.style.webkitMaskImage = `url(${obj.mask})`;
-                    el.style.maskImage = `url(${obj.mask})`;
-                    maskLayer.appendChild(el);
-                });
+                const glow = document.createElement('div');
+                glow.className = 'hotspot-glow';
+                glow.style.webkitMaskImage = `url(${obj.mask})`;
+                glow.style.maskImage = `url(${obj.mask})`;
+                maskLayer.appendChild(glow);
 
                 const [x1, y1, x2, y2] = obj.bbox;
                 const hotspot = document.createElement('div');
@@ -1268,22 +1113,22 @@
                 hotspot.style.height = ((y2 - y1) / SCENE_H * 100).toFixed(3) + '%';
                 scene.appendChild(hotspot);
 
-                objectLayers[obj.id] = { glowBack, glowFar, glowNear, overlay, hotspot };
+                objectLayers[obj.id] = { glow, hotspot };
 
                 hotspot.addEventListener('mouseenter', () => {
-                    if (!overlay.classList.contains('active') && !overlay.classList.contains('discovered')) {
-                        glowBack.classList.add('hover'); glowFar.classList.add('hover'); glowNear.classList.add('hover'); overlay.classList.add('hover');
+                    if (!glow.classList.contains('active') && !glow.classList.contains('discovered')) {
+                        glow.classList.add('hover');
                     }
                 });
                 hotspot.addEventListener('mouseleave', () => {
-                    if (!overlay.classList.contains('active')) {
-                        glowBack.classList.remove('hover'); glowFar.classList.remove('hover'); glowNear.classList.remove('hover'); overlay.classList.remove('hover');
+                    if (!glow.classList.contains('active')) {
+                        glow.classList.remove('hover');
                     }
                 });
                 hotspot.addEventListener('click', (e) => { e.stopPropagation(); onObjectClick(obj.id, e); });
 
                 if (discoveredObjects.has(obj.id)) {
-                    glowBack.classList.add('discovered'); glowFar.classList.add('discovered'); glowNear.classList.add('discovered'); overlay.classList.add('discovered');
+                    glow.classList.add('discovered');
                 }
             });
         }
@@ -1329,7 +1174,7 @@
             if (hint) { hint.style.transition = 'opacity 0.5s'; hint.style.opacity = '0'; setTimeout(() => hint.remove(), 500); }
 
             clearActiveStates();
-            layers.glowBack.classList.add('active'); layers.glowFar.classList.add('active'); layers.glowNear.classList.add('active'); layers.overlay.classList.add('active');
+            layers.glow.classList.add('active');
             playClickSound();
 
             const isNew = !discoveredObjects.has(objId);
@@ -1340,11 +1185,11 @@
         }
 
         function clearActiveStates() {
-            document.querySelectorAll('.hotspot-glow-back,.hotspot-glow-far,.hotspot-glow-near,.hotspot-overlay').forEach(el => el.classList.remove('active', 'hover'));
+            document.querySelectorAll('.hotspot-glow').forEach(el => el.classList.remove('active', 'hover'));
             OBJECTS.forEach(obj => {
                 if (discoveredObjects.has(obj.id)) {
                     const l = objectLayers[obj.id];
-                    if (l) { l.glowBack.classList.add('discovered'); l.glowFar.classList.add('discovered'); l.glowNear.classList.add('discovered'); l.overlay.classList.add('discovered'); }
+                    if (l) l.glow.classList.add('discovered');
                 }
             });
         }
@@ -1405,8 +1250,8 @@
             const target = undiscovered[Math.floor(Math.random() * undiscovered.length)];
             const l = objectLayers[target.id];
             if (l) {
-                l.glowBack.classList.add('hover'); l.glowFar.classList.add('hover'); l.glowNear.classList.add('hover'); l.hotspot.classList.add('hint-highlight');
-                setTimeout(() => { l.glowBack.classList.remove('hover'); l.glowFar.classList.remove('hover'); l.glowNear.classList.remove('hover'); l.hotspot.classList.remove('hint-highlight'); }, 3000);
+                l.glow.classList.add('hover'); l.hotspot.classList.add('hint-highlight');
+                setTimeout(() => { l.glow.classList.remove('hover'); l.hotspot.classList.remove('hint-highlight'); }, 3000);
             }
             showTooltip(`💡 Cerca ${target.icon} ${target.name}...`);
         }
@@ -1422,7 +1267,7 @@
         function resetGame() {
             if (!confirm('Vuoi ricominciare? Tutti i progressi saranno persi.')) return;
             discoveredObjects.clear(); localStorage.removeItem('lab_discovered');
-            document.querySelectorAll('.hotspot-glow-back,.hotspot-glow-far,.hotspot-glow-near,.hotspot-overlay').forEach(el => { el.classList.remove('active', 'hover', 'discovered'); el.style.background = ''; });
+            document.querySelectorAll('.hotspot-glow').forEach(el => { el.classList.remove('active', 'hover', 'discovered'); });
             buildProgressBar(); updateProgress(); updateJournal();
         }
 

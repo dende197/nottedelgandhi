@@ -572,7 +572,8 @@
         /* BUTTONS */
         #hint-btn,
         #reset-btn,
-        #journal-btn {
+        #journal-btn,
+        #audio-btn {
             position: fixed;
             z-index: 50;
             width: 48px;
@@ -605,12 +606,23 @@
             right: 136px
         }
 
+        #audio-btn {
+            top: 20px;
+            right: 194px
+        }
+
         #hint-btn:hover,
         #reset-btn:hover,
-        #journal-btn:hover {
+        #journal-btn:hover,
+        #audio-btn:hover {
             background: rgba(212, 168, 68, .2);
             box-shadow: 0 0 20px rgba(212, 168, 68, .3);
             transform: scale(1.1);
+        }
+
+        #audio-btn.muted {
+            color: var(--text-secondary);
+            border-color: rgba(255, 255, 255, .1);
         }
 
         #journal-btn.has-new::after {
@@ -886,7 +898,8 @@
 
             #hint-btn,
             #reset-btn,
-            #journal-btn {
+            #journal-btn,
+            #audio-btn {
                 width: 40px;
                 height: 40px;
                 font-size: 1.1rem
@@ -905,6 +918,11 @@
             #journal-btn {
                 top: 14px;
                 right: 110px
+            }
+
+            #audio-btn {
+                top: 14px;
+                right: 158px
             }
         }
     </style>
@@ -952,6 +970,7 @@
         <div class="progress-items" id="progress-items"></div>
     </div>
 
+    <button id="audio-btn" title="Attiva/Disattiva Audio"><span>🔊</span></button>
     <button id="journal-btn" title="Diario degli indizi"><span>📜</span></button>
     <button id="hint-btn" title="Mostra suggerimento"><span>💡</span></button>
     <button id="reset-btn" title="Ricomincia"><span>🔄</span></button>
@@ -990,6 +1009,55 @@
         ];
 
         const FINAL_MESSAGE = `<p><strong>🧬 Il Segreto del Laboratorio</strong></p><p>Hai scoperto il filo conduttore: la <strong>TRASFORMAZIONE</strong>.</p><p style="margin-top:16px;font-size:1.15rem;">✨ <em>"Nulla si crea, nulla si distrugge, tutto si trasforma."</em><br>— Antoine Lavoisier</p>`;
+
+        /* ═══════════════════════════════════════════════════════
+           AUDIO ENGINE
+           ═══════════════════════════════════════════════════════ */
+        const AudioController = {
+            muted: true,
+            initialized: false,
+            ambient: {
+                cauldron: new Audio('https://cdn.pixabay.com/audio/2022/03/10/audio_94c5166520.mp3'),
+                fire: new Audio('https://cdn.pixabay.com/audio/2022/03/03/audio_4b7456e01b.mp3')
+            },
+            sfx: {
+                pageFlip: new Audio('https://cdn.pixabay.com/audio/2023/11/26/audio_fdea793241.mp3'),
+                magic: new Audio('https://cdn.pixabay.com/audio/2024/10/08/audio_f4d3b969ee.mp3')
+            },
+
+            init() {
+                if (this.initialized) return;
+                // Setup loops
+                this.ambient.cauldron.loop = true;
+                this.ambient.cauldron.volume = 0.4;
+                this.ambient.fire.loop = true;
+                this.ambient.fire.volume = 0.3;
+                this.initialized = true;
+            },
+
+            toggle() {
+                this.muted = !this.muted;
+                const btn = document.getElementById('audio-btn');
+                btn.innerHTML = this.muted ? '<span>🔇</span>' : '<span>🔊</span>';
+                btn.classList.toggle('muted', this.muted);
+
+                if (this.muted) {
+                    this.ambient.cauldron.pause();
+                    this.ambient.fire.pause();
+                } else {
+                    this.init();
+                    this.ambient.cauldron.play().catch(e => console.warn("Audio play blocked", e));
+                    this.ambient.fire.play().catch(e => console.warn("Audio play blocked", e));
+                }
+            },
+
+            playSFX(key) {
+                if (this.muted || !this.sfx[key]) return;
+                const sound = this.sfx[key].cloneNode();
+                sound.volume = 0.6;
+                sound.play().catch(e => console.warn("SFX blocked", e));
+            }
+        };
 
         /* ═══════════════════════════════════════════════════════
            GLOW ENGINE — Canvas 2D puro
@@ -1199,7 +1267,9 @@
             document.getElementById('start-btn').addEventListener('click', () => {
                 introScreen.classList.add('fade-out');
                 setTimeout(() => introScreen.classList.add('hidden'), 1000);
+                // Audio initiation is handled by the toggle since browsers block autoplay
             });
+            document.getElementById('audio-btn').addEventListener('click', () => AudioController.toggle());
             document.getElementById('modal-close').addEventListener('click', closeModal);
             modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
             document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeJournal(); removeHintTooltip(); } });
@@ -1224,7 +1294,11 @@
             const isNew = !discoveredObjects.has(objId);
             discoveredObjects.add(objId); saveState();
             openModal(obj, isNew); updateProgress();
-            if (isNew) { journalBtn.classList.add('has-new'); updateJournal(); }
+            if (isNew) {
+                journalBtn.classList.add('has-new');
+                updateJournal();
+                AudioController.playSFX('magic');
+            }
             // Dopo aver scoperto, passa a verde
             setTimeout(() => setGlow(objId, 0, true), 100);
             if (discoveredObjects.size === OBJECTS.length) setTimeout(showCelebration, 1500);
@@ -1246,6 +1320,7 @@
             badge.innerHTML = isNew ? '<span>✨ Indizio Sbloccato!</span>' : '<span>📌 Già Scoperto</span>';
             badge.style.color = isNew ? '' : 'var(--text-secondary)';
             modalOverlay.classList.remove('hidden');
+            AudioController.playSFX('pageFlip');
         }
         function closeModal() {
             if (twInterval) { clearTimeout(twInterval); twInterval = null; }
@@ -1282,6 +1357,7 @@
                 l.hotspot.classList.add('hint-highlight');
                 setTimeout(() => { setGlow(target.id, 0, false); l.hotspot.classList.remove('hint-highlight'); }, 3000);
             }
+            AudioController.playSFX('magic');
             showTooltip(`💡 Cerca ${target.icon} ${target.name}...`);
         }
         function showTooltip(text) {

@@ -569,55 +569,43 @@
             }
         }
 
-        /* BUTTONS */
-        #hint-btn,
-        #reset-btn,
-        #journal-btn,
-        #audio-btn {
+        /* HUD BUTTONS - Educational Style (Text + Emoji) */
+        #hud-controls {
             position: fixed;
-            z-index: 50;
-            width: 48px;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 12px;
+        }
+
+        #audio-btn,
+        #hint-btn,
+        #journal-btn {
             height: 48px;
-            border-radius: 50%;
+            padding: 0 20px;
+            border-radius: 12px;
             background: var(--bg-glass);
-            border: 1px solid rgba(212, 168, 68, .25);
-            color: var(--gold);
-            font-size: 1.3rem;
+            border: 1px solid rgba(212, 168, 68, .3);
+            color: var(--gold-light);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 10px;
             transition: all .3s ease;
             backdrop-filter: blur(8px);
+            white-space: nowrap;
         }
 
-        #hint-btn {
-            top: 20px;
-            right: 20px
-        }
-
-        #reset-btn {
-            top: 20px;
-            right: 78px
-        }
-
-        #journal-btn {
-            top: 20px;
-            right: 136px
-        }
-
-        #audio-btn {
-            top: 20px;
-            right: 194px
-        }
-
+        #audio-btn:hover,
         #hint-btn:hover,
-        #reset-btn:hover,
-        #journal-btn:hover,
-        #audio-btn:hover {
-            background: rgba(212, 168, 68, .2);
-            box-shadow: 0 0 20px rgba(212, 168, 68, .3);
-            transform: scale(1.1);
+        #journal-btn:hover {
+            background: rgba(212, 168, 68, .25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 168, 68, .2);
         }
 
         #audio-btn.muted {
@@ -896,33 +884,19 @@
                 font-size: .9rem
             }
 
+            #hud-controls {
+                top: 10px;
+                right: 10px;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            #audio-btn,
             #hint-btn,
-            #reset-btn,
-            #journal-btn,
-            #audio-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 1.1rem
-            }
-
-            #hint-btn {
-                top: 14px;
-                right: 14px
-            }
-
-            #reset-btn {
-                top: 14px;
-                right: 62px
-            }
-
             #journal-btn {
-                top: 14px;
-                right: 110px
-            }
-
-            #audio-btn {
-                top: 14px;
-                right: 158px
+                height: 40px;
+                padding: 0 12px;
+                font-size: .9rem;
             }
         }
     </style>
@@ -934,8 +908,18 @@
         <div class="intro-particles"></div>
         <div class="intro-content">
             <h1 class="intro-title">Il Laboratorio Arcano</h1>
-            <p class="intro-subtitle">Esplora gli oggetti e scopri i segreti dell'alchimia...</p>
-            <button id="start-btn"><span class="btn-icon">🔮</span><span>Inizia l'Esplorazione</span></button>
+            <p class="intro-subtitle">Un viaggio tra i misteri dell'alchimia</p>
+
+            <div id="intro-buttons" style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                <button id="start-btn">
+                    <span class="btn-icon">🔮</span>
+                    <span id="start-btn-text">Inizia l'Esplorazione</span>
+                </button>
+                <button id="resume-btn" class="hidden"
+                    style="background: transparent; border: 1px solid rgba(212, 168, 68, .5); color: var(--text-secondary); padding: 10px 30px; border-radius: 50px; cursor: pointer;">
+                    Continua l'ultima partita
+                </button>
+            </div>
         </div>
     </div>
 
@@ -970,10 +954,13 @@
         <div class="progress-items" id="progress-items"></div>
     </div>
 
-    <button id="audio-btn" title="Attiva/Disattiva Audio"><span>🔊</span></button>
-    <button id="journal-btn" title="Diario degli indizi"><span>📜</span></button>
-    <button id="hint-btn" title="Mostra suggerimento"><span>💡</span></button>
-    <button id="reset-btn" title="Ricomincia"><span>🔄</span></button>
+    <div id="hud-controls">
+        <button id="audio-btn" title="Attiva/Disattiva Audio"><span>🔊</span> <span class="btn-label">Audio:
+                No</span></button>
+        <button id="journal-btn" title="Diario degli indizi"><span>📜</span> <span class="btn-label">Diario
+                Segreti</span></button>
+        <button id="hint-btn" title="Mostra suggerimento"><span>💡</span> <span class="btn-label">Aiuto</span></button>
+    </div>
 
     <div id="journal-panel" class="hidden">
         <div class="journal-inner">
@@ -1038,7 +1025,9 @@
             toggle() {
                 this.muted = !this.muted;
                 const btn = document.getElementById('audio-btn');
-                btn.innerHTML = this.muted ? '<span>🔇</span>' : '<span>🔊</span>';
+                const label = btn.querySelector('.btn-label');
+                btn.querySelector('span:first-child').textContent = this.muted ? '🔇' : '🔊';
+                if (label) label.textContent = `Audio: ${this.muted ? 'No' : 'Sì'}`;
                 btn.classList.toggle('muted', this.muted);
 
                 if (this.muted) {
@@ -1208,20 +1197,39 @@
         const particleCanvas = document.getElementById('particle-canvas');
 
         function init() {
-            try { const s = localStorage.getItem('lab_discovered'); if (s) discoveredObjects = new Set(JSON.parse(s)); } catch (e) { }
+            const savedProgress = localStorage.getItem('lab_discovered');
+            if (savedProgress) {
+                const parsed = JSON.parse(savedProgress);
+                if (parsed.length > 0) {
+                    // Show resume option if there's progress
+                    document.getElementById('resume-btn').classList.remove('hidden');
+                    document.getElementById('start-btn-text').textContent = 'Nuova Esplorazione (Azzera tutto)';
+                    // We don't load progress yet, wait for choice
+                }
+            }
+
             preloadMasks();
             resizeGlowCanvas();
-            window.addEventListener('resize', () => { resizeGlowCanvas(); });
+            window.addEventListener('resize', resizeGlowCanvas);
             buildScene();
             buildProgressBar();
             attachEvents();
             initParticles();
             updateProgress();
             updateJournal();
-            glowLoop();  // avvia il render loop
+            glowLoop();
+        }
 
-            // Applica stato discovered a oggetti già trovati
-            discoveredObjects.forEach(id => setGlow(id, 0, true));
+        function loadSavedState() {
+            try {
+                const s = localStorage.getItem('lab_discovered');
+                if (s) {
+                    discoveredObjects = new Set(JSON.parse(s));
+                    discoveredObjects.forEach(id => setGlow(id, 0, true));
+                    updateProgress();
+                    updateJournal();
+                }
+            } catch (e) { }
         }
 
         function saveState() {
@@ -1265,16 +1273,28 @@
 
         function attachEvents() {
             document.getElementById('start-btn').addEventListener('click', () => {
+                // Clear state if starting new
+                discoveredObjects.clear();
+                localStorage.removeItem('lab_discovered');
+                OBJECTS.forEach(obj => setGlow(obj.id, 0, false));
+                updateProgress();
+                updateJournal();
+
                 introScreen.classList.add('fade-out');
                 setTimeout(() => introScreen.classList.add('hidden'), 1000);
-                // Audio initiation is handled by the toggle since browsers block autoplay
             });
+
+            document.getElementById('resume-btn').addEventListener('click', () => {
+                loadSavedState();
+                introScreen.classList.add('fade-out');
+                setTimeout(() => introScreen.classList.add('hidden'), 1000);
+            });
+
             document.getElementById('audio-btn').addEventListener('click', () => AudioController.toggle());
             document.getElementById('modal-close').addEventListener('click', closeModal);
             modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
             document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeJournal(); removeHintTooltip(); } });
             document.getElementById('hint-btn').addEventListener('click', showHint);
-            document.getElementById('reset-btn').addEventListener('click', resetGame);
             journalBtn.addEventListener('click', toggleJournal);
             document.getElementById('journal-close').addEventListener('click', closeJournal);
             journalPanel.addEventListener('click', e => { if (e.target === journalPanel) closeJournal(); });
@@ -1328,7 +1348,7 @@
         }
 
         function updateProgress() {
-            progressText.textContent = `${discoveredObjects.size} / ${OBJECTS.length} segreti scoperti`;
+            progressText.innerHTML = `<strong>${discoveredObjects.size} di ${OBJECTS.length}</strong> segreti scoperti`;
             OBJECTS.forEach(obj => { const it = document.getElementById(`prog-${obj.id}`); if (it && discoveredObjects.has(obj.id)) it.classList.add('found'); });
         }
 

@@ -640,122 +640,6 @@
             }
         }
 
-        /* JOURNAL */
-        #journal-panel {
-            position: fixed;
-            inset: 0;
-            z-index: 150;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, .8);
-            backdrop-filter: blur(12px);
-        }
-
-        .journal-inner {
-            max-width: 560px;
-            width: 92%;
-            max-height: 80vh;
-            overflow-y: auto;
-            background: linear-gradient(145deg, rgba(25, 18, 40, .97), rgba(12, 8, 22, .99));
-            border: 1px solid rgba(212, 168, 68, .25);
-            border-radius: 20px;
-            padding: 32px;
-            box-shadow: 0 0 50px rgba(212, 168, 68, .1);
-            animation: modalSlideIn .4s cubic-bezier(.34, 1.56, .64, 1);
-        }
-
-        .journal-inner::-webkit-scrollbar {
-            width: 6px
-        }
-
-        .journal-inner::-webkit-scrollbar-thumb {
-            background: rgba(212, 168, 68, .25);
-            border-radius: 3px
-        }
-
-        .journal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(212, 168, 68, .15);
-        }
-
-        .journal-title {
-            font-family: var(--font-title);
-            font-size: 1.3rem;
-            color: var(--gold);
-        }
-
-        #journal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.6rem;
-            cursor: pointer;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all .3s;
-        }
-
-        #journal-close:hover {
-            color: var(--gold);
-            background: rgba(212, 168, 68, .1)
-        }
-
-        .journal-entry {
-            padding: 16px;
-            margin-bottom: 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(212, 168, 68, .12);
-            background: rgba(212, 168, 68, .03)
-        }
-
-        .journal-entry.locked {
-            opacity: .4;
-            border-color: rgba(255, 255, 255, .05);
-            background: rgba(255, 255, 255, .02)
-        }
-
-        .journal-entry-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px
-        }
-
-        .journal-entry-icon {
-            font-size: 1.3rem
-        }
-
-        .journal-entry-name {
-            font-family: var(--font-title);
-            font-size: .95rem;
-            color: var(--gold)
-        }
-
-        .journal-entry.locked .journal-entry-name {
-            color: var(--text-secondary)
-        }
-
-        .journal-entry-clue {
-            font-size: .9rem;
-            font-style: italic;
-            color: var(--gold-light);
-            line-height: 1.5;
-            padding-left: 32px
-        }
-
-        .journal-entry.locked .journal-entry-clue {
-            color: var(--text-secondary)
-        }
-
         /* TOOLTIP */
         .hint-tooltip {
             position: fixed;
@@ -892,8 +776,7 @@
             }
 
             #audio-btn,
-            #hint-btn,
-            #journal-btn {
+            #hint-btn {
                 height: 40px;
                 padding: 0 12px;
                 font-size: .9rem;
@@ -914,10 +797,6 @@
                 <button id="start-btn">
                     <span class="btn-icon">🔮</span>
                     <span id="start-btn-text">Inizia l'Esplorazione</span>
-                </button>
-                <button id="resume-btn" class="hidden"
-                    style="background: transparent; border: 1px solid rgba(212, 168, 68, .5); color: var(--text-secondary); padding: 10px 30px; border-radius: 50px; cursor: pointer;">
-                    Continua l'ultima partita
                 </button>
             </div>
         </div>
@@ -957,19 +836,7 @@
     <div id="hud-controls">
         <button id="audio-btn" title="Attiva/Disattiva Audio"><span>🔊</span> <span class="btn-label">Audio:
                 No</span></button>
-        <button id="journal-btn" title="Diario degli indizi"><span>📜</span> <span class="btn-label">Diario
-                Segreti</span></button>
         <button id="hint-btn" title="Mostra suggerimento"><span>💡</span> <span class="btn-label">Aiuto</span></button>
-    </div>
-
-    <div id="journal-panel" class="hidden">
-        <div class="journal-inner">
-            <div class="journal-header">
-                <h2 class="journal-title">📜 Diario degli Indizi</h2>
-                <button id="journal-close" aria-label="Chiudi diario">&times;</button>
-            </div>
-            <div class="journal-entries" id="journal-entries"></div>
-        </div>
     </div>
 
     <div id="celebration-overlay" class="hidden">
@@ -1068,23 +935,22 @@
         function preloadMasks() {
             OBJECTS.forEach(obj => {
                 const img = new Image();
+                img.src = obj.mask;
                 img.onload = () => {
                     maskImages[obj.id] = img;
+                    console.log(`Mask loaded: ${obj.id}`);
                     imagesLoaded++;
                 };
                 img.onerror = () => {
-                    console.warn(`Mask non trovata: ${obj.mask}`);
-                    imagesLoaded++;
-                };
-                img.src = obj.mask;
+                    img.src = obj.mask;
 
-                glowState[obj.id] = {
-                    alpha: 0,
-                    targetAlpha: 0,
-                    // dorato hover, verde discovered
-                    color: { r: 255, g: 200, b: 60 }
-                };
-            });
+                    glowState[obj.id] = {
+                        alpha: 0,
+                        targetAlpha: 0,
+                        // dorato hover, verde discovered
+                        color: { r: 255, g: 200, b: 60 }
+                    };
+                });
         }
 
         // Ridimensiona il canvas al wrapper
@@ -1189,25 +1055,11 @@
         const modalClueText = document.getElementById('modal-clue-text');
         const progressText = document.getElementById('progress-text');
         const progressItems = document.getElementById('progress-items');
-        const journalBtn = document.getElementById('journal-btn');
-        const journalPanel = document.getElementById('journal-panel');
-        const journalEntries = document.getElementById('journal-entries');
         const celebOverlay = document.getElementById('celebration-overlay');
         const finalMessage = document.getElementById('final-message');
         const particleCanvas = document.getElementById('particle-canvas');
 
         function init() {
-            const savedProgress = localStorage.getItem('lab_discovered');
-            if (savedProgress) {
-                const parsed = JSON.parse(savedProgress);
-                if (parsed.length > 0) {
-                    // Show resume option if there's progress
-                    document.getElementById('resume-btn').classList.remove('hidden');
-                    document.getElementById('start-btn-text').textContent = 'Nuova Esplorazione (Azzera tutto)';
-                    // We don't load progress yet, wait for choice
-                }
-            }
-
             preloadMasks();
             resizeGlowCanvas();
             window.addEventListener('resize', resizeGlowCanvas);
@@ -1216,20 +1068,7 @@
             attachEvents();
             initParticles();
             updateProgress();
-            updateJournal();
             glowLoop();
-        }
-
-        function loadSavedState() {
-            try {
-                const s = localStorage.getItem('lab_discovered');
-                if (s) {
-                    discoveredObjects = new Set(JSON.parse(s));
-                    discoveredObjects.forEach(id => setGlow(id, 0, true));
-                    updateProgress();
-                    updateJournal();
-                }
-            } catch (e) { }
         }
 
         function saveState() {
@@ -1278,14 +1117,7 @@
                 localStorage.removeItem('lab_discovered');
                 OBJECTS.forEach(obj => setGlow(obj.id, 0, false));
                 updateProgress();
-                updateJournal();
 
-                introScreen.classList.add('fade-out');
-                setTimeout(() => introScreen.classList.add('hidden'), 1000);
-            });
-
-            document.getElementById('resume-btn').addEventListener('click', () => {
-                loadSavedState();
                 introScreen.classList.add('fade-out');
                 setTimeout(() => introScreen.classList.add('hidden'), 1000);
             });
@@ -1293,11 +1125,8 @@
             document.getElementById('audio-btn').addEventListener('click', () => AudioController.toggle());
             document.getElementById('modal-close').addEventListener('click', closeModal);
             modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeJournal(); removeHintTooltip(); } });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); removeHintTooltip(); } });
             document.getElementById('hint-btn').addEventListener('click', showHint);
-            journalBtn.addEventListener('click', toggleJournal);
-            document.getElementById('journal-close').addEventListener('click', closeJournal);
-            journalPanel.addEventListener('click', e => { if (e.target === journalPanel) closeJournal(); });
             document.getElementById('celebration-close').addEventListener('click', () => celebOverlay.classList.add('hidden'));
         }
 
@@ -1315,8 +1144,6 @@
             discoveredObjects.add(objId); saveState();
             openModal(obj, isNew); updateProgress();
             if (isNew) {
-                journalBtn.classList.add('has-new');
-                updateJournal();
                 AudioController.playSFX('magic');
             }
             // Dopo aver scoperto, passa a verde

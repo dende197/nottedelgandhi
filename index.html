@@ -213,7 +213,7 @@
             position: relative;
             width: min(100vw, calc(100vh * 1.7927));
             aspect-ratio: 1280/714;
-            overflow: hidden;
+            overflow: visible;
             flex-shrink: 0;
         }
 
@@ -248,14 +248,18 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 3;
+            z-index: 11;
         }
 
         /* HOTSPOT */
         .hotspot {
             position: absolute;
             cursor: pointer;
-            z-index: 5;
+            z-index: 15;
+            /* DEBUG: rimuovere il commento per vedere i bounding box
+            background: rgba(255,0,0,0.15);
+            border: 1px solid red;
+            */
         }
 
         .hotspot.hint-highlight::after {
@@ -856,7 +860,7 @@
             { id: 'calderone', icon: '🔥', name: 'Il Calderone Alchemico', mask: 'Imported_Image-1.png', bbox: [580, 362, 723, 465], story: 'Questo antico calderone di ferro battuto è stato forgiato nel XV secolo. Il fuoco blu che lo alimenta non è una fiamma ordinaria: è una reazione esotermica ottenuta mescolando sali di rame con alcol etilico.', clue: 'La fiamma blu brucia a 1085°C — la temperatura di fusione del rame. Ricorda questo numero...' },
             { id: 'ampolla', icon: '⚗️', name: "L'Ampolla di Vetro", mask: 'Imported_Image-2.png', bbox: [741, 422, 793, 592], story: 'Una sottile ampolla di vetro soffiato a mano, probabilmente di fattura veneziana. Contiene un liquido che cambia colore alla luce — un fenomeno detto fluorescenza, scoperto da George Stokes nel 1852.', clue: 'Il liquido fluorescente reagisce alla luce ultravioletta. La parola chiave è LUCE.' },
             { id: 'libro', icon: '📖', name: 'Il Grimorio dei Segreti', mask: 'Imported_Image-3.png', bbox: [385, 503, 629, 601], story: 'Il grimorio è aperto su una pagina coperta di simboli che sembrano muoversi sotto la luce tremolante. Le pagine in pergamena di vitello sono state scritte con inchiostro ferro-gallico.', clue: 'A pagina 42 si legge: "Aurum potabile" — l\'oro potabile era considerato l\'elisir della vita eterna.' },
-            { id: 'lente', icon: '🔍', name: "La Lente d'Ingrandimento", mask: 'Imported_Image-4.png', bbox: [665, 616, 721, 655], story: 'Attraverso questa lente convergente, i simboli sul tavolo appaiono completamente diversi. Le lenti furono perfezionate nel XIII secolo dai monaci benedettini.', clue: "La lente rivela ciò che è nascosto. Come la scienza, mostra ciò che l'occhio non vede." },
+            { id: 'lente', icon: '🔍', name: "La Lente d'Ingrandimento", mask: 'Imported_Image-4.png', bbox: [645, 596, 741, 675], story: 'Attraverso questa lente convergente, i simboli sul tavolo appaiono completamente diversi. Le lenti furono perfezionate nel XIII secolo dai monaci benedettini.', clue: "La lente rivela ciò che è nascosto. Come la scienza, mostra ciò che l'occhio non vede." },
             { id: 'foglio', icon: '📄', name: 'Le Formule Segrete', mask: 'Imported_Image-5.png', bbox: [222, 197, 260, 241], story: "Un foglio ingiallito coperto di formule chimiche. L'inchiostro è ancora fresco — qualcuno era qui poco fa.", clue: 'Zolfo (🜍), Mercurio (☿), Sale (🜔) — i tre principi di Paracelso. La materia si TRASFORMA.' },
             { id: 'ampolla-verde', icon: '🧪', name: "L'Ampolla Verde", mask: 'Imported_Image-6.png', bbox: [336, 415, 387, 507], story: 'Un\'ampolla dal liquido verde brillante che pulsa debolmente. Il colore proviene dal solfato di rame disciolto.', clue: '"Solo la dose fa il veleno" — vale per ogni sostanza. Anche l\'acqua può essere letale in dosi eccessive!' },
             { id: 'cesto', icon: '🧺', name: 'Il Cesto delle Erbe', mask: 'Imported_Image-7.png', bbox: [224, 548, 298, 631], story: "Un cesto di vimini intrecciato contiene erbe essiccate dal profumo insolito. Si riconoscono artemisia, verbena e un'erba sconosciuta dalle foglie blu.", clue: 'Le erbe nascondono principi attivi. La chimica delle piante è la base della medicina moderna.' }
@@ -909,9 +913,11 @@
 
             playSFX(key) {
                 if (this.muted || !this.sfx[key]) return;
-                const sound = this.sfx[key].cloneNode();
-                sound.volume = 0.6;
-                sound.play().catch(e => console.warn("SFX blocked", e));
+                try {
+                    var sound = this.sfx[key].cloneNode(true);
+                    sound.volume = 0.6;
+                    sound.play().catch(function (e) { console.warn("SFX blocked", e); });
+                } catch (e) { /* silent */ }
             }
         };
 

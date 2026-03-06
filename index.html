@@ -935,22 +935,23 @@
         function preloadMasks() {
             OBJECTS.forEach(obj => {
                 const img = new Image();
-                img.src = obj.mask;
                 img.onload = () => {
                     maskImages[obj.id] = img;
-                    console.log(`Mask loaded: ${obj.id}`);
+                    console.log("Mask loaded:", obj.id);
                     imagesLoaded++;
                 };
                 img.onerror = () => {
-                    img.src = obj.mask;
+                    console.error("Failed to load mask:", obj.id, obj.mask);
+                    imagesLoaded++;
+                };
+                img.src = obj.mask;
 
-                    glowState[obj.id] = {
-                        alpha: 0,
-                        targetAlpha: 0,
-                        // dorato hover, verde discovered
-                        color: { r: 255, g: 200, b: 60 }
-                    };
-                });
+                glowState[obj.id] = {
+                    alpha: 0,
+                    targetAlpha: 0,
+                    color: { r: 255, g: 200, b: 60 }
+                };
+            });
         }
 
         // Ridimensiona il canvas al wrapper
@@ -1179,19 +1180,6 @@
             OBJECTS.forEach(obj => { const it = document.getElementById(`prog-${obj.id}`); if (it && discoveredObjects.has(obj.id)) it.classList.add('found'); });
         }
 
-        function toggleJournal() { journalPanel.classList.contains('hidden') ? openJournal() : closeJournal(); }
-        function openJournal() { journalBtn.classList.remove('has-new'); updateJournal(); journalPanel.classList.remove('hidden'); }
-        function closeJournal() { journalPanel.classList.add('hidden'); }
-        function updateJournal() {
-            journalEntries.innerHTML = '';
-            OBJECTS.forEach(obj => {
-                const isFound = discoveredObjects.has(obj.id);
-                const entry = document.createElement('div');
-                entry.className = `journal-entry ${isFound ? 'unlocked' : 'locked'}`;
-                entry.innerHTML = `<div class="journal-entry-header"><span class="journal-entry-icon">${isFound ? obj.icon : '🔒'}</span><span class="journal-entry-name">${isFound ? obj.name : '???'}</span></div><div class="journal-entry-clue">${isFound ? obj.clue : 'Indizio non ancora scoperto...'}</div>`;
-                journalEntries.appendChild(entry);
-            });
-        }
 
         function showHint() {
             removeHintTooltip();
@@ -1215,12 +1203,6 @@
         }
         function removeHintTooltip() { const e = document.getElementById('active-tooltip'); if (e) e.remove(); }
 
-        function resetGame() {
-            if (!confirm('Vuoi ricominciare? Tutti i progressi saranno persi.')) return;
-            discoveredObjects.clear(); localStorage.removeItem('lab_discovered');
-            OBJECTS.forEach(obj => setGlow(obj.id, 0, false));
-            buildProgressBar(); updateProgress(); updateJournal();
-        }
 
         function showCelebration() {
             closeModal(); finalMessage.innerHTML = FINAL_MESSAGE;
